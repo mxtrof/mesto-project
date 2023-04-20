@@ -19,72 +19,61 @@
       <div class="profile__info">
         <div class="profile__info-container">
           <h1 class="profile__name">Жак-Ив Кусто</h1>
-          <button class="profile__edit-button" type="button" aria-label="Кнопка редактирования профиля"></button>
+          <button class="profile__edit-button modal-open" type="button" aria-label="Кнопка редактирования профиля" data-modal-open="modal_editProfile"></button>
         </div>
         <p class="profile__description">Исследователь океана</p>
       </div>
-      <button class="profile__add-button" type="button" aria-label="Кнопка создания нового места"></button>
+      <button class="profile__add-button modal-open" type="button" aria-label="Кнопка создания нового места" data-modal-open="modal_addPlace"></button>
     </section>
     <section class="elements" aria-label="Карточки путешествий по местам в России">
       <ul class="elements__list">
-        <li class="element">
-          <img class="element__image" src="./images/kirill-pershin-1088404-karachaevsk.png" alt="Карачаевск">
-          <div class="element__footer">
-            <h2 class="element__title">Карачаевск</h2>
-            <button class="element__like-button" type="button" aria-label="Кнопка лайк"></button>
-          </div>
-        </li>
-        <li class="element">
-          <img class="element__image" src="./images/kirill-pershin-1404681-elbrus.png" alt="Гора Эльбрус">
-          <div class="element__footer">
-            <h2 class="element__title">Гора Эльбрус</h2>
-            <button class="element__like-button" type="button" aria-label="Кнопка лайк"></button>
-          </div>
-        </li>
-        <li class="element">
-          <img class="element__image" src="./images/kirill-pershin-1556355-dombai.png" alt="Домбай">
-          <div class="element__footer">
-            <h2 class="element__title">Домбай</h2>
-            <button class="element__like-button" type="button" aria-label="Кнопка лайк"></button>
-          </div>
-        </li>
-        <li class="element">
-          <img class="element__image" src="./images/kirill-pershin-1404681-elbrus.png" alt="Гора Эльбрус">
-          <div class="element__footer">
-            <h2 class="element__title">Гора Эльбрус</h2>
-            <button class="element__like-button" type="button" aria-label="Кнопка лайк"></button>
-          </div>
-        </li>
-        <li class="element">
-          <img class="element__image" src="./images/kirill-pershin-1556355-dombai.png" alt="Домбай">
-          <div class="element__footer">
-            <h2 class="element__title">Домбай</h2>
-            <button class="element__like-button" type="button" aria-label="Кнопка лайк"></button>
-          </div>
-        </li>
-        <li class="element">
-          <img class="element__image" src="./images/kirill-pershin-1088404-karachaevsk.png" alt="Карачаевск">
-          <div class="element__footer">
-            <h2 class="element__title">Карачаево-Черкессия</h2>
-            <button class="element__like-button" type="button" aria-label="Кнопка лайк"></button>
-          </div>
-        </li>
       </ul>
     </section>
   </main>
   <footer class="footer" aria-label="Подвал сайта с автором">
     <p class="footer__copyright">&copy; 2023 Максим Трофимов</p>
   </footer>
-  <section class="popup"> <!--Добавить для открытия popup окна в классы "popup_opened" -->
+  <section class="popup popup_type_editProfile" data-modal="modal_editProfile" data-submit="submit_editProfile"> <!--Добавить для открытия popup окна в классы "popup_opened" -->
     <div class="popup__container">
-      <button class="popup__close-button" type="button" aria-label="Кнопка закрытия окна"></button>
+      <button class="popup__close-button modal-close" type="button" aria-label="Кнопка закрытия окна"></button>
       <h2 class="popup__title">Редактировать профиль</h2>
-      <form class="popup__form" name="editProfile">
+      <form class="popup__form" name="editProfile" id="formEditProfile">
         <input type="text" class="popup__input popup__input_content_name" id="name" name="name" placeholder="Введите ФИО" required>
         <input type="text" class="popup__input popup__input_content_description" id="description" name="description" placeholder="Введите профессию" required>
-      </form>
-      <button class="popup__save-button" type="submit">Сохранить</button>
+      </form>      
+      <button class="popup__save-button modal-submit modal_submit_editProfile" type="submit" form="formEditProfile" data-modal-submit="submit_editProfile">Сохранить</button>
     </div>
   </section>
+  <section class="popup popup_type_addPlace" data-modal="modal_addPlace" data-submit="submit_AddPlace"> 
+    <div class="popup__container">
+      <button class="popup__close-button modal-close" type="button" aria-label="Кнопка закрытия окна"></button>
+      <h2 class="popup__title">Новое место</h2>
+      <form class="popup__form" name="editProfile" id="formAddPlace">
+        <input type="text" class="popup__input popup__input_content_place" id="name" name="name" placeholder="Название" required>
+        <input type="text" class="popup__input popup__input_content_link" id="description" name="description" placeholder="Ссылка на картинку" required>
+      </form>      
+      <button class="popup__save-button modal-submit modal_submit_addPlace" type="submit" form="formAddPlace" data-modal-submit="submit_AddPlace">Создать</button>
+    </div>
+  </section>
+  <section class="popup popup_type_image" data-modal="modal_image">
+    <div class="popup__image-container">
+      <button class="popup__close-button modal-close" type="button" aria-label="Кнопка закрытия окна"></button>
+        <figure>
+          <img class="popup__image" src="#" alt="">
+          <figcaption class="popup__image-caption"></figcaption>
+        </figure>
+    </div>
+  </section>
+  <template id="cardsListTemplate">
+    <li class="element">
+      <img class="element__image" src="" alt="">
+      <button class="element__trash-button" type="button" aria-label="Кнопка удаления места"></button>
+      <div class="element__footer">
+        <h2 class="element__title"></h2>
+        <button class="element__like-button" type="button" aria-label="Кнопка лайк"></button>
+      </div>
+    </li>
+  </template>
+  <script src="./pages/index.js"></script>
 </body>
 </html>
