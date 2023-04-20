@@ -19,11 +19,11 @@
       <div class="profile__info">
         <div class="profile__info-container">
           <h1 class="profile__name">Жак-Ив Кусто</h1>
-          <button class="profile__edit-button modal-open" type="button" aria-label="Кнопка редактирования профиля" data-modal-open="modal_editProfile"></button>
+          <button class="profile__edit-button modal-open" type="button" aria-label="Кнопка редактирования профиля"></button>
         </div>
         <p class="profile__description">Исследователь океана</p>
       </div>
-      <button class="profile__add-button modal-open" type="button" aria-label="Кнопка создания нового места" data-modal-open="modal_addPlace"></button>
+      <button class="profile__add-button modal-open" type="button" aria-label="Кнопка создания нового места"></button>
     </section>
     <section class="elements" aria-label="Карточки путешествий по местам в России">
       <ul class="elements__list">
@@ -33,29 +33,29 @@
   <footer class="footer" aria-label="Подвал сайта с автором">
     <p class="footer__copyright">&copy; 2023 Максим Трофимов</p>
   </footer>
-  <section class="popup popup_type_editProfile" data-modal="modal_editProfile" data-submit="submit_editProfile"> <!--Добавить для открытия popup окна в классы "popup_opened" -->
+  <section class="popup popup_type_editProfile"> <!--Добавить для открытия popup окна в классы "popup_opened" -->
     <div class="popup__container">
       <button class="popup__close-button modal-close" type="button" aria-label="Кнопка закрытия окна"></button>
       <h2 class="popup__title">Редактировать профиль</h2>
-      <form class="popup__form" name="editProfile" id="formEditProfile">
+      <form class="popup__form popup__form-editProfile" name="editProfile" id="formEditProfile">
         <input type="text" class="popup__input popup__input_content_name" id="name" name="name" placeholder="Введите ФИО" required>
         <input type="text" class="popup__input popup__input_content_description" id="description" name="description" placeholder="Введите профессию" required>
       </form>      
-      <button class="popup__save-button modal-submit modal_submit_editProfile" type="submit" form="formEditProfile" data-modal-submit="submit_editProfile">Сохранить</button>
+      <button class="popup__save-button" type="submit" form="formEditProfile">Сохранить</button>
     </div>
   </section>
-  <section class="popup popup_type_addPlace" data-modal="modal_addPlace" data-submit="submit_AddPlace"> 
+  <section class="popup popup_type_addPlace"> 
     <div class="popup__container">
       <button class="popup__close-button modal-close" type="button" aria-label="Кнопка закрытия окна"></button>
       <h2 class="popup__title">Новое место</h2>
-      <form class="popup__form" name="editProfile" id="formAddPlace">
+      <form class="popup__form popup__form-addPlace" name="editProfile" id="formAddPlace">
         <input type="text" class="popup__input popup__input_content_place" id="name" name="name" placeholder="Название" required>
         <input type="text" class="popup__input popup__input_content_link" id="description" name="description" placeholder="Ссылка на картинку" required>
       </form>      
-      <button class="popup__save-button modal-submit modal_submit_addPlace" type="submit" form="formAddPlace" data-modal-submit="submit_AddPlace">Создать</button>
+      <button class="popup__save-button" type="submit" form="formAddPlace">Создать</button>
     </div>
   </section>
-  <section class="popup popup_type_image" data-modal="modal_image">
+  <section class="popup popup_type_image">
     <div class="popup__image-container">
       <button class="popup__close-button modal-close" type="button" aria-label="Кнопка закрытия окна"></button>
         <figure>
@@ -74,6 +74,7 @@
       </div>
     </li>
   </template>
+  <script src="./pages/constants.js"></script>
   <script src="./pages/index.js"></script>
 </body>
 </html>
