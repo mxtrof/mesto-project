@@ -2,7 +2,6 @@
 <html lang="ru">
 <head>
   <title lang="en">Mesto Russia</title>
-  <link rel="stylesheet" href="./pages/index.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Спринт 2, проект mesto на Яндекс Практикуме">
@@ -11,11 +10,11 @@
 </head>
 <body class="page">
   <header class="header" aria-label="Шапка сайта с логотипом">
-    <img class="header__logo" src="./images/header-logo.svg" alt="Логотип шапки проекта Mesto">
+    <img class="header__logo" src="<%=require('./images/header-logo.svg')%>" alt="Логотип шапки проекта Mesto">
   </header>
   <main>
     <section class="profile" aria-label="Профиль пользователя">
-      <img class="profile__avatar" src="./images/Avatar.jpg" alt="Аватар профиля пользователя">
+      <img class="profile__avatar" src="<%=require('./images/Avatar.jpg')%>" alt="Аватар профиля пользователя">
       <div class="profile__info">
         <div class="profile__info-container">
           <h1 class="profile__name">Жак-Ив Кусто</h1>
@@ -33,15 +32,17 @@
   <footer class="footer" aria-label="Подвал сайта с автором">
     <p class="footer__copyright">&copy; 2023 Максим Трофимов</p>
   </footer>
-  <section class="popup popup_type_editProfile"> <!--Добавить для открытия popup окна в классы "popup_opened" -->
+  <section class="popup popup_type_editProfile">
     <div class="popup__container">
       <button class="popup__close-button modal-close" type="button" aria-label="Кнопка закрытия окна"></button>
       <h2 class="popup__title">Редактировать профиль</h2>
       <form class="popup__form popup__form-editProfile" name="editProfile" id="formEditProfile">
-        <input type="text" class="popup__input popup__input_content_name" id="name" name="name" placeholder="Введите ФИО" required>
-        <input type="text" class="popup__input popup__input_content_description" id="description" name="description" placeholder="Введите профессию" required>
-      </form>      
-      <button class="popup__save-button" type="submit" form="formEditProfile">Сохранить</button>
+        <input type="text" class="popup__input popup__input_content_name" name="name" placeholder="Введите ФИО" required minlength="2" maxlength="40" id="name-input" pattern="^[а-яА-Яa-zA-Z -]+$" data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы">
+        <span class="popup__input-error name-input-error"></span>
+        <input type="text" class="popup__input popup__input_content_description" name="description" placeholder="Введите профессию" required minlength="2" maxlength="200" id="description-input">
+        <span class="popup__input-error description-input-error"></span>
+        <button class="popup__save-button" type="submit" form="formEditProfile">Сохранить</button>
+      </form> 
     </div>
   </section>
   <section class="popup popup_type_addPlace"> 
@@ -49,10 +50,12 @@
       <button class="popup__close-button modal-close" type="button" aria-label="Кнопка закрытия окна"></button>
       <h2 class="popup__title">Новое место</h2>
       <form class="popup__form popup__form-addPlace" name="editProfile" id="formAddPlace">
-        <input type="text" class="popup__input popup__input_content_place" id="name" name="name" placeholder="Название" required>
-        <input type="text" class="popup__input popup__input_content_link" id="description" name="description" placeholder="Ссылка на картинку" required>
-      </form>      
-      <button class="popup__save-button" type="submit" form="formAddPlace">Создать</button>
+        <input type="text" class="popup__input popup__input_content_place" name="name" placeholder="Название" required minlength="2" maxlength="30" id="name-input" pattern="^[а-яА-Яa-zA-Z -]+$" data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы">
+        <span class="popup__input-error name-input-error"></span>
+        <input type="url" class="popup__input popup__input_content_link" name="description" placeholder="Ссылка на картинку" required id="link-input">
+        <span class="popup__input-error link-input-error"></span>
+        <button class="popup__save-button" type="submit" form="formAddPlace">Создать</button>
+      </form> 
     </div>
   </section>
   <section class="popup popup_type_image">
@@ -74,7 +77,5 @@
       </div>
     </li>
   </template>
-  <script src="./pages/constants.js"></script>
-  <script src="./pages/index.js"></script>
 </body>
 </html>
