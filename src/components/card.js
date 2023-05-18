@@ -1,9 +1,9 @@
-import {openModal, closeModal} from './modal.js';
+import {openModal, closeModal} from './utils.js';
 import {initialCards, 
     imageModal,
     popupImage,
     popupCaption,
-    addPlaceModal,
+    cardsListTemplateHtml,
     cardsList} from './constants.js';
 
 function openImageHandler(evt) {
@@ -22,43 +22,25 @@ function openImageHandler(evt) {
     openModal(imageModal);
 }
 
-export const addPlaceFormSubmitHandler = (evt) => {
-    evt.preventDefault();
-
-    const placeInput = addPlaceModal.querySelector('.popup__input_content_place').value;
-    const linkInput = addPlaceModal.querySelector('.popup__input_content_link').value;
-
-    if (placeInput !== '' && linkInput !== '') {
-        const dataCard = { name: placeInput, link: linkInput };
-        // создадим карточку
-        const cardElem = createCard(dataCard);
-        addCard(cardElem);
-        // закрыть модальное окно
-        closeModal(addPlaceModal);
-        // очистим поля формы
-        addPlaceModal.querySelector('.popup__form').reset();
-    }
-}
-
 function deletePlaceHandler(evt) {
 
      evt.target.closest('.element').remove();
 }
 
-function addCard(cardElem) {
+export const addCard = (cardElem) => {
     cardsList.prepend(cardElem);
 }
 
-function createCard(item) {
+export const createCard = (item) => {
 
     // считываем шаблон
-    const cardsListTemplate = document.querySelector('#cardsListTemplate').content;
+    const cardsListTemplate = cardsListTemplateHtml.content;
     // копируем узел для заполнения
     const cardElement = cardsListTemplate.querySelector('.element').cloneNode(true);
 
     // заполняем нужные поля-свойства
     cardElement.querySelector('.element__title').textContent = item.name;
-    let elementImage = cardElement.querySelector('.element__image');
+    const elementImage = cardElement.querySelector('.element__image');
     elementImage.setAttribute('src', item.link);
     elementImage.setAttribute('alt', item.name);
 

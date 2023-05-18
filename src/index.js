@@ -1,22 +1,61 @@
 import './pages/index.css';
-import {FormEditProfile, 
-    FormAddPlace,
-    enableValidationSettings,
+import {
+    formEditProfile,
+    formAddPlace,
+    profileName,
+    profileDescription,
+    validationSettings,
     editProfileButton,
     addPlaceButton,
-    modals,
+    addPlaceModalPlaceInput,
+    addPlaceModalLinkInput,
+    editProfileModalNameInput,
+    editProfileModalJobInput,
     imageModal,
     addPlaceModal,
-    editProfileModal} from './components/constants.js';
-import {openAddPlaceModal,
-    openProfileModal,
-    closeModalClickHandler,
-    editProfileFormSubmitHandler/* ,
-    escCloseHandler */
-} from './components/modal.js';
-import {enableValidation} from './components/validate.js';
-import {createCards, addPlaceFormSubmitHandler} from './components/card.js';
+    editProfileModal
+} from './components/constants.js';
 
+import {
+    openAddPlaceModal,
+    openProfileModal,
+    closeModalClickHandler
+} from './components/modal.js';
+
+import { enableValidation, toggleButtonState, getFormElements} from './components/validate.js';
+import { addCard, createCard, createCards } from './components/card.js';
+import { closeModal } from './components/utils.js';
+
+const addPlaceFormSubmitHandler = (evt) => {
+    
+    evt.preventDefault();
+
+    const placeInput = addPlaceModalPlaceInput.value;
+    const linkInput = addPlaceModalLinkInput.value;
+
+    const dataCard = { name: placeInput, link: linkInput };
+    // создадим карточку
+    const cardElem = createCard(dataCard);
+    addCard(cardElem);
+
+    // закрыть модальное окно
+    closeModal(addPlaceModal);
+
+    // очистим поля формы
+    formAddPlace.reset();
+}
+
+const editProfileFormSubmitHandler = (evt) => {
+    evt.preventDefault();
+
+    const nameInput = editProfileModalNameInput.value;
+    const jobInput = editProfileModalJobInput.value;
+
+    profileName.textContent = nameInput;
+    profileDescription.textContent = jobInput;
+
+    closeModal(editProfileModal);
+}
 
 createCards();
 
@@ -30,9 +69,9 @@ addPlaceModal.addEventListener('click', closeModalClickHandler);
 imageModal.addEventListener('click', closeModalClickHandler);
 
 // обработчики сабмит модальных форм
-FormAddPlace.addEventListener('submit', addPlaceFormSubmitHandler);
-FormEditProfile.addEventListener('submit', editProfileFormSubmitHandler);
+formAddPlace.addEventListener('submit', addPlaceFormSubmitHandler);
+formEditProfile.addEventListener('submit', editProfileFormSubmitHandler);
 
 // вызов валидации для модальных форм
-enableValidation(enableValidationSettings, FormAddPlace);
-enableValidation(enableValidationSettings, FormEditProfile);
+enableValidation(validationSettings, formAddPlace);
+enableValidation(validationSettings, formEditProfile);
