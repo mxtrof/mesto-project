@@ -16,15 +16,11 @@ import {
     editProfileModal
 } from './components/constants.js';
 
-import {
-    openAddPlaceModal,
-    openProfileModal,
-    closeModalClickHandler
-} from './components/modal.js';
+import {closeModalClickHandler, closeModal, openModal} from './components/modal.js';
 
 import { enableValidation, toggleButtonState, getFormElements} from './components/validate.js';
 import { addCard, createCard, createCards } from './components/card.js';
-import { closeModal } from './components/utils.js';
+
 
 const addPlaceFormSubmitHandler = (evt) => {
     
@@ -55,6 +51,25 @@ const editProfileFormSubmitHandler = (evt) => {
     profileDescription.textContent = jobInput;
 
     closeModal(editProfileModal);
+}
+
+const openAddPlaceModal = () => {
+    openModal(addPlaceModal);
+    
+    // определение состояния кнопки на форме после открытия
+    const formElements = getFormElements(validationSettings, formAddPlace);
+    toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
+}
+
+const openProfileModal = () => {
+    
+    editProfileModalNameInput.value = profileName.textContent;
+    editProfileModalJobInput.value = profileDescription.textContent;
+    openModal(editProfileModal);
+
+    // определение состояния кнопки на форме после открытия
+    const formElements = getFormElements(validationSettings, formEditProfile);
+    toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
 }
 
 createCards();

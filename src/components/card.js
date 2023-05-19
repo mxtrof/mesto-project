@@ -1,4 +1,4 @@
-import {openModal, closeModal} from './utils.js';
+import {openModal} from './modal.js';
 import {initialCards, 
     imageModal,
     popupImage,

@@ -1,31 +1,18 @@
-import {
-    profileName,
-    formAddPlace,
-    formEditProfile,
-    profileDescription,
-    validationSettings,
-    addPlaceModal,
-    editProfileModal} from './constants.js';
-import {openModal, closeModal} from './utils.js';
-import { enableValidation, toggleButtonState, getFormElements} from './validate.js';
-
-export const openAddPlaceModal = () => {
-    openModal(addPlaceModal);
-    
-    // определение состояния кнопки на форме после открытия
-    const formElements = getFormElements(validationSettings, formAddPlace);
-    toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
+const closeByEsc = (evt) => {
+    if (evt.key === "Escape") {
+      const openedPopup = document.querySelector('.popup_opened');
+      closeModal(openedPopup); 
+    }
 }
 
-export const openProfileModal = () => {
-    
-    editProfileModal.querySelector('.popup__input_content_name').value = profileName.textContent;
-    editProfileModal.querySelector('.popup__input_content_description').value = profileDescription.textContent;
-    openModal(editProfileModal);
+export const openModal = (modal) => {
+    modal.classList.add('popup_opened');
+    document.addEventListener('keydown', closeByEsc);
+}
 
-    // определение состояния кнопки на форме после открытия
-    const formElements = getFormElements(validationSettings, formEditProfile);
-    toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
+export const closeModal = (elem) => {
+    elem.classList.remove('popup_opened');
+    document.removeEventListener('keydown', closeByEsc);
 }
 
 export const closeModalClickHandler = (evt) => {
