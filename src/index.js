@@ -2,43 +2,81 @@ import './pages/index.css';
 import {
     formEditProfile,
     formAddPlace,
+    formEditAvatar,
     profileName,
     profileDescription,
+    profileAvatar,
     validationSettings,
     editProfileButton,
+    editAvatarButton,
     addPlaceButton,
     addPlaceModalPlaceInput,
     addPlaceModalLinkInput,
     editProfileModalNameInput,
     editProfileModalJobInput,
+    editAvatarLinkInput,
     imageModal,
     addPlaceModal,
-    editProfileModal
+    editProfileModal,
+    editAvatarModal
 } from './components/constants.js';
 
-import {closeModalClickHandler, closeModal, openModal} from './components/modal.js';
+import { closeModalClickHandler, closeModal, openModal } from './components/modal.js';
 
-import { enableValidation, toggleButtonState, getFormElements} from './components/validate.js';
+import { enableValidation, toggleButtonState, getFormElements } from './components/validate.js';
 import { addCard, createCard, createCards } from './components/card.js';
+import { getUserInfo, getInitialCards, addNewCard, setUserInfo, changeAvatar } from './components/api';
 
+export let userId = "";
+
+const updateLoadingText = (process, formElement, validationSettings) => {
+
+    const formElements = getFormElements(validationSettings, formElement);
+
+    if (process) {
+        formElements.buttonElement.textContent = 'Сохранение...';
+    } else {
+        formElements.buttonElement.textContent = 'Сохранить';
+    }
+}
 
 const addPlaceFormSubmitHandler = (evt) => {
-    
+
     evt.preventDefault();
 
     const placeInput = addPlaceModalPlaceInput.value;
     const linkInput = addPlaceModalLinkInput.value;
 
     const dataCard = { name: placeInput, link: linkInput };
-    // создадим карточку
-    const cardElem = createCard(dataCard);
-    addCard(cardElem);
 
-    // закрыть модальное окно
-    closeModal(addPlaceModal);
+    updateLoadingText(true, formAddPlace, validationSettings);
 
-    // очистим поля формы
-    formAddPlace.reset();
+    // запишем данные на сервере и полученную инфу отразив с списке
+    addNewCard(dataCard)
+        .then((res) => {
+            if (res.ok) {
+                return res.json(); // возвращаем вызов метода json
+            }
+            // иначе отклоняем промис, чтобы перейти в catch
+            return Promise.reject(`Ошибка: ${res.status}`);
+        })
+        .then((res) => {
+            // создадим карточку
+            const cardElem = createCard(res);
+            addCard(cardElem);
+
+            // закрыть модальное окно
+            closeModal(addPlaceModal);
+
+            // очистим поля формы
+            formAddPlace.reset();
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+        .finally(() => {
+            updateLoadingText(false, formAddPlace, validationSettings);
+          })
 }
 
 const editProfileFormSubmitHandler = (evt) => {
@@ -47,22 +85,72 @@ const editProfileFormSubmitHandler = (evt) => {
     const nameInput = editProfileModalNameInput.value;
     const jobInput = editProfileModalJobInput.value;
 
-    profileName.textContent = nameInput;
-    profileDescription.textContent = jobInput;
+    const dataUser = { name: nameInput, about: jobInput };
 
-    closeModal(editProfileModal);
+    updateLoadingText(true, formEditProfile, validationSettings);
+
+    setUserInfo(dataUser)
+        .then((res) => {
+            if (res.ok) {
+                return res.json(); // возвращаем вызов метода json
+            }
+            // иначе отклоняем промис, чтобы перейти в catch
+            return Promise.reject(`Ошибка: ${res.status}`);
+        })
+        .then((res) => {
+            // обновим данные профиля
+            profileName.textContent = res.name;
+            profileDescription.textContent = res.about;
+
+            closeModal(editProfileModal);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+        .finally(() => {
+            updateLoadingText(false, formEditProfile, validationSettings);
+          })
+}
+
+function editAvatarFormSubmitHandler(evt) {
+    evt.preventDefault();
+
+    const datLink = {avatar: editAvatarLinkInput.value};
+
+    updateLoadingText(true, formEditAvatar, validationSettings);
+
+    changeAvatar(datLink)
+        .then((res) => {
+            if (res.ok) {
+                return res.json(); // возвращаем вызов метода json
+            }
+            // иначе отклоняем промис, чтобы перейти в catch
+            return Promise.reject(`Ошибка: ${res.status}`);
+        })
+        .then((res) => {
+            // обновим данные профиля
+            UpdateUserInfo();
+            formEditAvatar.reset();
+            closeModal(editAvatarModal);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+        .finally(() => {
+            updateLoadingText(false, formEditAvatar, validationSettings);
+          })
 }
 
 const openAddPlaceModal = () => {
     openModal(addPlaceModal);
-    
+
     // определение состояния кнопки на форме после открытия
     const formElements = getFormElements(validationSettings, formAddPlace);
     toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
 }
 
 const openProfileModal = () => {
-    
+
     editProfileModalNameInput.value = profileName.textContent;
     editProfileModalJobInput.value = profileDescription.textContent;
     openModal(editProfileModal);
@@ -72,21 +160,71 @@ const openProfileModal = () => {
     toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
 }
 
-createCards();
+const openEditAvatarModal = () => {
+    openModal(editAvatarModal);
+
+    // определение состояния кнопки на форме после открытия
+    const formElements = getFormElements(validationSettings, editAvatarModal);
+    toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
+}
+
+// получим данные пользователя
+const UpdateUserInfo = () => {
+
+    getUserInfo()
+        .then((res) => {
+            if (res.ok) {
+                return res.json(); // возвращаем вызов метода json
+            }
+            // иначе отклоняем промис, чтобы перейти в catch
+            return Promise.reject(`Ошибка: ${res.status}`);
+        })
+        .then((res) => {
+            userId = res._id;
+            profileName.textContent = res.name;
+            profileDescription.textContent = res.about;
+            profileAvatar.src = res.avatar;
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+}
+
+UpdateUserInfo();
+
+// получим карточки с сервера, а не из констант
+getInitialCards()
+    .then((res) => {
+        if (res.ok) {
+            return res.json(); // возвращаем вызов метода json
+        }
+        // иначе отклоняем промис, чтобы перейти в catch
+        return Promise.reject(`Ошибка: ${res.status}`);
+    })
+    .then((res) => {
+        createCards(res);
+    })
+    .catch((err) => {
+        console.log(err);
+    })
 
 // обработчики открытия модальных форм
 editProfileButton.addEventListener('click', openProfileModal);
 addPlaceButton.addEventListener('click', openAddPlaceModal);
+editAvatarButton.addEventListener('click', openEditAvatarModal);
 
 // обработчики закрытия формы по клику мыши
 editProfileModal.addEventListener('click', closeModalClickHandler);
 addPlaceModal.addEventListener('click', closeModalClickHandler);
 imageModal.addEventListener('click', closeModalClickHandler);
+editAvatarModal.addEventListener('click', closeModalClickHandler);
 
 // обработчики сабмит модальных форм
 formAddPlace.addEventListener('submit', addPlaceFormSubmitHandler);
 formEditProfile.addEventListener('submit', editProfileFormSubmitHandler);
+formEditAvatar.addEventListener('submit', editAvatarFormSubmitHandler);
 
 // вызов валидации для модальных форм
 enableValidation(validationSettings, formAddPlace);
 enableValidation(validationSettings, formEditProfile);
+enableValidation(validationSettings, formEditAvatar);

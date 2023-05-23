@@ -1,7 +1,9 @@
+import {getFormElements} from './validate.js';
+
 const closeByEsc = (evt) => {
     if (evt.key === "Escape") {
-      const openedPopup = document.querySelector('.popup_opened');
-      closeModal(openedPopup); 
+        const openedPopup = document.querySelector('.popup_opened');
+        closeModal(openedPopup);
     }
 }
 
@@ -21,3 +23,4 @@ export const closeModalClickHandler = (evt) => {
         closeModal(evt.currentTarget);
     }
 }
+

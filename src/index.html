@@ -15,6 +15,7 @@
   <main>
     <section class="profile" aria-label="Профиль пользователя">
       <img class="profile__avatar" src="<%=require('./images/Avatar.jpg')%>" alt="Аватар профиля пользователя">
+      <button class="profile__avatar-edit" type="button" aria-label="Редактировать аватар профиля пользователя"></button>
       <div class="profile__info">
         <div class="profile__info-container">
           <h1 class="profile__name">Жак-Ив Кусто</h1>
@@ -54,7 +55,7 @@
         <span class="popup__input-error name-input-error"></span>
         <input type="url" class="popup__input popup__input_content_link" name="description" placeholder="Ссылка на картинку" required id="link-input">
         <span class="popup__input-error link-input-error"></span>
-        <button class="popup__save-button" type="submit" form="formAddPlace">Создать</button>
+        <button class="popup__save-button" type="submit" form="formAddPlace">Сохранить</button>
       </form> 
     </div>
   </section>
@@ -67,13 +68,27 @@
         </figure>
     </div>
   </section>
+  <section class="popup popup_type_editAvatar">
+    <div class="popup__container">
+      <button class="popup__close-button modal-close" type="button" aria-label="Кнопка закрытия окна"></button>
+      <h2 class="popup__title">Обновить аватар</h2>
+      <form class="popup__form popup__form-editAvatar" name="editAvatar" id="formeditAvatar" novalidate>
+        <input type="url" class="popup__input popup__input_avatar_link" name="avatarLink" placeholder="Ссылка на картинку" required id="avatarlink-input">
+        <span class="popup__input-error avatarlink-input-error"></span>
+        <button class="popup__save-button" type="submit">Сохранить</button>
+      </form>
+    </div>
+  </section>  
   <template id="cardsListTemplate">
-    <li class="element">
+    <li class="element" data-id="">
       <img class="element__image" src="" alt="">
       <button class="element__trash-button" type="button" aria-label="Кнопка удаления места"></button>
       <div class="element__footer">
         <h2 class="element__title"></h2>
-        <button class="element__like-button" type="button" aria-label="Кнопка лайк"></button>
+        <div class="element__like-container">
+          <button class="element__like-button" type="button" aria-label="Кнопка лайк"></button>
+          <p class="element__likes-count">0</p>
+        </div>     
       </div>
     </li>
   </template>
