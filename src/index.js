@@ -107,7 +107,7 @@ function editAvatarFormSubmitHandler(evt) {
 
     changeAvatar(datLink)
         .then((res) => {
-            updateAvatar(res);
+            updateAvatar(res.avatar);
             formEditAvatar.reset();
             closeModal(editAvatarModal);
         })
