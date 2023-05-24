@@ -10,11 +10,25 @@ export const getUserInfo = () => {
     return fetch(`${authorizationSettings.url}/users/me`, {
         headers: authorizationSettings.headers
     })
+    .then((res) => {
+        if (res.ok) {
+            return res.json(); // возвращаем вызов метода json
+        }
+        // иначе отклоняем промис, чтобы перейти в catch
+        return Promise.reject(`Ошибка: ${res.status}`);
+    })
 }
 
 export const getInitialCards = () => {
     return fetch(`${authorizationSettings.url}/cards`, {
         headers: authorizationSettings.headers
+    })
+    .then((res) => {
+        if (res.ok) {
+            return res.json(); // возвращаем вызов метода json
+        }
+        // иначе отклоняем промис, чтобы перейти в catch
+        return Promise.reject(`Ошибка: ${res.status}`);
     })
 }
 
@@ -24,6 +38,13 @@ export const addNewCard = (dataCard) => {
         headers: authorizationSettings.headers,
         body: JSON.stringify(dataCard)
     })
+    .then((res) => {
+        if (res.ok) {
+            return res.json(); // возвращаем вызов метода json
+        }
+        // иначе отклоняем промис, чтобы перейти в catch
+        return Promise.reject(`Ошибка: ${res.status}`);
+    })
 }
 
 export const setUserInfo = (dataUser) => {
@@ -32,12 +53,26 @@ export const setUserInfo = (dataUser) => {
         headers: authorizationSettings.headers,
         body: JSON.stringify(dataUser)
     })
+    .then((res) => {
+        if (res.ok) {
+            return res.json(); // возвращаем вызов метода json
+        }
+        // иначе отклоняем промис, чтобы перейти в catch
+        return Promise.reject(`Ошибка: ${res.status}`);
+    })
 }
 
 export const deleteCard = (cardId) => {
     return fetch(`${authorizationSettings.url}/cards/${cardId}`, {
         method: 'DELETE',
         headers: authorizationSettings.headers
+    })
+    .then((res) => {
+        if (res.ok) {
+            return res.json(); // возвращаем вызов метода json
+        }
+        // иначе отклоняем промис, чтобы перейти в catch
+        return Promise.reject(`Ошибка: ${res.status}`);
     })
 }
 
@@ -46,12 +81,26 @@ export const setLikeCard = (cardId) => {
         method: 'PUT',
         headers: authorizationSettings.headers
     })
+    .then((res) => {
+        if (res.ok) {
+            return res.json(); // возвращаем вызов метода json
+        }
+        // иначе отклоняем промис, чтобы перейти в catch
+        return Promise.reject(`Ошибка: ${res.status}`);
+    })
 }
 
 export const deleteLikeCard = (cardId) => {
     return fetch(`${authorizationSettings.url}/cards/${cardId}/likes`, {
         method: 'DELETE',
         headers: authorizationSettings.headers
+    })
+    .then((res) => {
+        if (res.ok) {
+            return res.json(); // возвращаем вызов метода json
+        }
+        // иначе отклоняем промис, чтобы перейти в catch
+        return Promise.reject(`Ошибка: ${res.status}`);
     })
 }
 
@@ -60,5 +109,12 @@ export const changeAvatar = (datalink) => {
         method: 'PATCH',
         headers: authorizationSettings.headers,
         body: JSON.stringify(datalink)
+    })
+    .then((res) => {
+        if (res.ok) {
+            return res.json(); // возвращаем вызов метода json
+        }
+        // иначе отклоняем промис, чтобы перейти в catch
+        return Promise.reject(`Ошибка: ${res.status}`);
     })
 }

@@ -29,13 +29,6 @@ function deletePlaceHandler(evt, cardElement) {
 
     deleteCard(cardElement.dataset.id)
         .then((res) => {
-            if (res.ok) {
-                return res.json(); // возвращаем вызов метода json
-            }
-            // иначе отклоняем промис, чтобы перейти в catch
-            return Promise.reject(`Ошибка: ${res.status}`);
-        })
-        .then((res) => {
             evt.target.closest('.element').remove();
         })
         .catch((err) => {
@@ -43,25 +36,22 @@ function deletePlaceHandler(evt, cardElement) {
         })    
 }
 
-function UpdateLikes(likeCount, item) {
+function updateLikes(likeCount, item, likeButton) {
     likeCount.textContent = item.likes.length;
+    item.likes.forEach((elem)=>{
+        if (userId == elem._id) {
+            likeButton.classList.add('element__like-button_active');
+        } else likeButton.classList.remove('element__like-button_active');
+    })
 }
 
-function UpdateLikeContainer(evt, likeCount, cardElement) {
+function updateLikeContainer(evt, likeCount, cardElement, likeButton) {
 
     if (evt.target.classList.contains('element__like-button_active')){
 
         deleteLikeCard(cardElement.dataset.id)
         .then((res) => {
-            if (res.ok) {
-                return res.json(); // возвращаем вызов метода json
-            }
-            // иначе отклоняем промис, чтобы перейти в catch
-            return Promise.reject(`Ошибка: ${res.status}`);
-        })
-        .then((res) => {
-            UpdateLikes(likeCount, res);
-            toggleLikeStatus(evt);
+            updateLikes(likeCount, res, likeButton);
         })
         .catch((err) => {
             console.log(err);
@@ -69,25 +59,12 @@ function UpdateLikeContainer(evt, likeCount, cardElement) {
     } else {
         setLikeCard(cardElement.dataset.id)
         .then((res) => {
-            if (res.ok) {
-                return res.json(); // возвращаем вызов метода json
-            }
-            // иначе отклоняем промис, чтобы перейти в catch
-            return Promise.reject(`Ошибка: ${res.status}`);
-        })
-        .then((res) => {
-            UpdateLikes(likeCount, res);
-            toggleLikeStatus(evt)
+            updateLikes(likeCount, res, likeButton);
         })
         .catch((err) => {
             console.log(err);
         })
     }
-
-}
-
-function toggleLikeStatus(evt) {
-    evt.target.classList.toggle('element__like-button_active');
 }
 
 export const addCard = (cardElem) => {
@@ -106,10 +83,11 @@ export const createCard = (item) => {
     cardElement.querySelector('.element__title').textContent = item.name;
     const elementImage = cardElement.querySelector('.element__image');
     const likeCount = cardElement.querySelector('.element__likes-count');
+    const likeButton = cardElement.querySelector('.element__like-button');
     elementImage.setAttribute('src', item.link);
     elementImage.setAttribute('alt', item.name);
     
-    UpdateLikes(likeCount, item);
+    updateLikes(likeCount, item, likeButton);
     cardElement.dataset.id = item._id;
 
     if (userId != item.owner._id) {
@@ -117,8 +95,8 @@ export const createCard = (item) => {
     }
 
     // Добавим обработчик-слушатель для установки лайков
-    cardElement.querySelector('.element__like-button').addEventListener('click', function (evt) {
-        UpdateLikeContainer(evt, likeCount, cardElement);
+    likeButton.addEventListener('click', function (evt) {
+        updateLikeContainer(evt, likeCount, cardElement, likeButton);
     });
 
 

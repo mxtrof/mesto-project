@@ -54,13 +54,6 @@ const addPlaceFormSubmitHandler = (evt) => {
     // запишем данные на сервере и полученную инфу отразив с списке
     addNewCard(dataCard)
         .then((res) => {
-            if (res.ok) {
-                return res.json(); // возвращаем вызов метода json
-            }
-            // иначе отклоняем промис, чтобы перейти в catch
-            return Promise.reject(`Ошибка: ${res.status}`);
-        })
-        .then((res) => {
             // создадим карточку
             const cardElem = createCard(res);
             addCard(cardElem);
@@ -76,7 +69,7 @@ const addPlaceFormSubmitHandler = (evt) => {
         })
         .finally(() => {
             updateLoadingText(false, formAddPlace, validationSettings);
-          })
+        })
 }
 
 const editProfileFormSubmitHandler = (evt) => {
@@ -91,13 +84,6 @@ const editProfileFormSubmitHandler = (evt) => {
 
     setUserInfo(dataUser)
         .then((res) => {
-            if (res.ok) {
-                return res.json(); // возвращаем вызов метода json
-            }
-            // иначе отклоняем промис, чтобы перейти в catch
-            return Promise.reject(`Ошибка: ${res.status}`);
-        })
-        .then((res) => {
             // обновим данные профиля
             profileName.textContent = res.name;
             profileDescription.textContent = res.about;
@@ -109,27 +95,19 @@ const editProfileFormSubmitHandler = (evt) => {
         })
         .finally(() => {
             updateLoadingText(false, formEditProfile, validationSettings);
-          })
+        })
 }
 
 function editAvatarFormSubmitHandler(evt) {
     evt.preventDefault();
 
-    const datLink = {avatar: editAvatarLinkInput.value};
+    const datLink = { avatar: editAvatarLinkInput.value };
 
     updateLoadingText(true, formEditAvatar, validationSettings);
 
     changeAvatar(datLink)
         .then((res) => {
-            if (res.ok) {
-                return res.json(); // возвращаем вызов метода json
-            }
-            // иначе отклоняем промис, чтобы перейти в catch
-            return Promise.reject(`Ошибка: ${res.status}`);
-        })
-        .then((res) => {
-            // обновим данные профиля
-            UpdateUserInfo();
+            updateAvatar(res);
             formEditAvatar.reset();
             closeModal(editAvatarModal);
         })
@@ -138,7 +116,7 @@ function editAvatarFormSubmitHandler(evt) {
         })
         .finally(() => {
             updateLoadingText(false, formEditAvatar, validationSettings);
-          })
+        })
 }
 
 const openAddPlaceModal = () => {
@@ -168,45 +146,9 @@ const openEditAvatarModal = () => {
     toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
 }
 
-// получим данные пользователя
-const UpdateUserInfo = () => {
-
-    getUserInfo()
-        .then((res) => {
-            if (res.ok) {
-                return res.json(); // возвращаем вызов метода json
-            }
-            // иначе отклоняем промис, чтобы перейти в catch
-            return Promise.reject(`Ошибка: ${res.status}`);
-        })
-        .then((res) => {
-            userId = res._id;
-            profileName.textContent = res.name;
-            profileDescription.textContent = res.about;
-            profileAvatar.src = res.avatar;
-        })
-        .catch((err) => {
-            console.log(err);
-        })
+function updateAvatar(link) {
+    profileAvatar.src = link;
 }
-
-UpdateUserInfo();
-
-// получим карточки с сервера, а не из констант
-getInitialCards()
-    .then((res) => {
-        if (res.ok) {
-            return res.json(); // возвращаем вызов метода json
-        }
-        // иначе отклоняем промис, чтобы перейти в catch
-        return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .then((res) => {
-        createCards(res);
-    })
-    .catch((err) => {
-        console.log(err);
-    })
 
 // обработчики открытия модальных форм
 editProfileButton.addEventListener('click', openProfileModal);
@@ -228,3 +170,18 @@ formEditAvatar.addEventListener('submit', editAvatarFormSubmitHandler);
 enableValidation(validationSettings, formAddPlace);
 enableValidation(validationSettings, formEditProfile);
 enableValidation(validationSettings, formEditAvatar);
+
+Promise.all([getUserInfo(), getInitialCards()])
+    .then(([userData, cardsData]) => {
+        // установим пользовательские данные
+        userId = userData._id;
+        profileName.textContent = userData.name;
+        profileDescription.textContent = userData.about;
+        updateAvatar(userData.avatar);
+        // выведем считанные карточки
+        cardsData.reverse();
+        createCards(cardsData);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
