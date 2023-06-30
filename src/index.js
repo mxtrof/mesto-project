@@ -185,3 +185,8 @@ Promise.all([getUserInfo(), getInitialCards()])
     .catch((err) => {
         console.log(err);
     });
+
+
+
+
+    console.log('Получилось')
