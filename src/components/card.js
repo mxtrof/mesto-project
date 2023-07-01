@@ -1,6 +1,7 @@
 import { openModal } from './modal.js';
 import { userId } from '../index.js';
-import { deleteCard, deleteLikeCard, setLikeCard } from './api.js';
+/* import { deleteCard, deleteLikeCard, setLikeCard } from './api.js'; */
+import {Api} from './api.js';
 import {
     imageModal,
     popupImage,
@@ -8,6 +9,16 @@ import {
     cardsListTemplateHtml,
     cardsList
 } from './constants.js';
+
+// создаем объект класса Api
+// это КОСТЫЛЬ пока не напишем класс Card, пока просто чтобы работало
+const api = new Api({
+    url: 'https://mesto.nomoreparties.co/v1/plus-cohort-24',
+    headers: {
+        authorization: 'd8022b50-8c1c-4a15-ba76-94ce65b1ce67',
+        'Content-Type': 'application/json'
+    }
+})
 
 function openImageHandler(evt) {
 
@@ -27,7 +38,7 @@ function openImageHandler(evt) {
 
 function deletePlaceHandler(evt, cardElement) {
 
-    deleteCard(cardElement.dataset.id)
+    api.deleteCard(cardElement.dataset.id)
         .then((res) => {
             evt.target.closest('.element').remove();
         })
@@ -49,7 +60,7 @@ function updateLikeContainer(evt, likeCount, cardElement, likeButton) {
 
     if (evt.target.classList.contains('element__like-button_active')){
 
-        deleteLikeCard(cardElement.dataset.id)
+        api.deleteLikeCard(cardElement.dataset.id)
         .then((res) => {
             updateLikes(likeCount, res, likeButton);
         })
@@ -57,7 +68,7 @@ function updateLikeContainer(evt, likeCount, cardElement, likeButton) {
             console.log(err);
         })
     } else {
-        setLikeCard(cardElement.dataset.id)
+        api.setLikeCard(cardElement.dataset.id)
         .then((res) => {
             updateLikes(likeCount, res, likeButton);
         })

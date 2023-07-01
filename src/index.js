@@ -25,9 +25,42 @@ import { closeModalClickHandler, closeModal, openModal } from './components/moda
 
 import { enableValidation, toggleButtonState, getFormElements } from './components/validate.js';
 import { addCard, createCard, createCards } from './components/card.js';
-import { getUserInfo, getInitialCards, addNewCard, setUserInfo, changeAvatar } from './components/api';
+/* import { getUserInfo, getInitialCards, addNewCard, setUserInfo, changeAvatar } from './components/api'; */
+import {Api} from './components/api.js';
 
 export let userId = "";
+
+// создаем объект класса Api
+const api = new Api({
+    url: 'https://mesto.nomoreparties.co/v1/plus-cohort-24',
+    headers: {
+        authorization: 'd8022b50-8c1c-4a15-ba76-94ce65b1ce67',
+        'Content-Type': 'application/json'
+    }
+})
+
+// вызываем основные методы класса Api для отображения данных на странице при первом входе
+Promise.all([api.getUserInfo(), api.getInitialCards()])
+    .then(([userData, cardsData]) => {
+        // установим пользовательские данные
+        userId = userData._id;
+        profileName.textContent = userData.name;
+        profileDescription.textContent = userData.about;
+        updateAvatar(userData.avatar);
+        // выведем считанные карточки
+        cardsData.reverse();
+        createCards(cardsData);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+    // также сразу вызвал методы, относящиеся к Api addNewCard, setUserInfo, changeAvatar (через объект api)
+
+
+
+
+
 
 const updateLoadingText = (process, formElement, validationSettings) => {
 
@@ -52,7 +85,7 @@ const addPlaceFormSubmitHandler = (evt) => {
     updateLoadingText(true, formAddPlace, validationSettings);
 
     // запишем данные на сервере и полученную инфу отразив с списке
-    addNewCard(dataCard)
+    api.addNewCard(dataCard)
         .then((res) => {
             // создадим карточку
             const cardElem = createCard(res);
@@ -82,7 +115,7 @@ const editProfileFormSubmitHandler = (evt) => {
 
     updateLoadingText(true, formEditProfile, validationSettings);
 
-    setUserInfo(dataUser)
+    api.setUserInfo(dataUser)
         .then((res) => {
             // обновим данные профиля
             profileName.textContent = res.name;
@@ -105,7 +138,7 @@ function editAvatarFormSubmitHandler(evt) {
 
     updateLoadingText(true, formEditAvatar, validationSettings);
 
-    changeAvatar(datLink)
+    api.changeAvatar(datLink)
         .then((res) => {
             updateAvatar(res.avatar);
             formEditAvatar.reset();
@@ -171,7 +204,7 @@ enableValidation(validationSettings, formAddPlace);
 enableValidation(validationSettings, formEditProfile);
 enableValidation(validationSettings, formEditAvatar);
 
-Promise.all([getUserInfo(), getInitialCards()])
+/* Promise.all([getUserInfo(), getInitialCards()])
     .then(([userData, cardsData]) => {
         // установим пользовательские данные
         userId = userData._id;
@@ -184,4 +217,4 @@ Promise.all([getUserInfo(), getInitialCards()])
     })
     .catch((err) => {
         console.log(err);
-    });
+    }); */
