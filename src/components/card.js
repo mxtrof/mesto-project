@@ -1,4 +1,4 @@
-import { openModal } from './modal.js';
+// import { openModal } from './modal.js';
 /* import { userId } from '../index.js'; */
 /* import { deleteCard, deleteLikeCard, setLikeCard } from './api.js'; */
 import {

@@ -21,7 +21,7 @@ import {
     editAvatarModal
 } from './components/constants.js';
 
-import { closeModalClickHandler, closeModal, openModal } from './components/modal.js';
+import {Popup} from './components/modal.js';
 
 import { enableValidation, toggleButtonState, getFormElements } from './components/validate.js';
 import { addCard, createCard, createCards } from './components/card.js';
@@ -171,7 +171,7 @@ function editAvatarFormSubmitHandler(evt) {
 }
 
 const openAddPlaceModal = () => {
-    openModal(addPlaceModal);
+    new Popup('.popup_type_addPlace').openModal()
 
     // определение состояния кнопки на форме после открытия
     const formElements = getFormElements(validationSettings, formAddPlace);
@@ -182,7 +182,7 @@ const openProfileModal = () => {
 
     editProfileModalNameInput.value = profileName.textContent;
     editProfileModalJobInput.value = profileDescription.textContent;
-    openModal(editProfileModal);
+    new Popup('.popup_type_editProfile').openModal()
 
     // определение состояния кнопки на форме после открытия
     const formElements = getFormElements(validationSettings, formEditProfile);
@@ -190,7 +190,7 @@ const openProfileModal = () => {
 }
 
 const openEditAvatarModal = () => {
-    openModal(editAvatarModal);
+    new Popup('.popup_type_editAvatar').openModal()
 
     // определение состояния кнопки на форме после открытия
     const formElements = getFormElements(validationSettings, editAvatarModal);
@@ -207,10 +207,10 @@ addPlaceButton.addEventListener('click', openAddPlaceModal);
 editAvatarButton.addEventListener('click', openEditAvatarModal);
 
 // обработчики закрытия формы по клику мыши
-editProfileModal.addEventListener('click', closeModalClickHandler);
-addPlaceModal.addEventListener('click', closeModalClickHandler);
-imageModal.addEventListener('click', closeModalClickHandler);
-editAvatarModal.addEventListener('click', closeModalClickHandler);
+// editProfileModal.addEventListener('click', closeModalClickHandler);   /// мы в классе Popup добавляем слушатель для закрытия 
+// addPlaceModal.addEventListener('click', closeModalClickHandler);      /// поэтому эти слушатели не нужны 
+// imageModal.addEventListener('click', closeModalClickHandler);
+// editAvatarModal.addEventListener('click', closeModalClickHandler);
 
 // обработчики сабмит модальных форм
 formAddPlace.addEventListener('submit', addPlaceFormSubmitHandler);
@@ -236,4 +236,6 @@ enableValidation(validationSettings, formEditAvatar);
     .catch((err) => {
         console.log(err);
     }); */
-console.log('Тут-ат')
+
+    
+   
