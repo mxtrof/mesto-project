@@ -236,3 +236,4 @@ enableValidation(validationSettings, formEditAvatar);
     .catch((err) => {
         console.log(err);
     }); */
+console.log('Тут-ат')
