@@ -26,7 +26,8 @@ import { closeModalClickHandler, closeModal, openModal } from './components/moda
 import { enableValidation, toggleButtonState, getFormElements } from './components/validate.js';
 import { addCard, createCard, createCards } from './components/card.js';
 /* import { getUserInfo, getInitialCards, addNewCard, setUserInfo, changeAvatar } from './components/api'; */
-import {Api} from './components/api.js';
+import { Api } from './components/api.js';
+import { Card } from './components/card.js';
 
 export let userId = "";
 
@@ -49,14 +50,31 @@ Promise.all([api.getUserInfo(), api.getInitialCards()])
         updateAvatar(userData.avatar);
         // выведем считанные карточки
         cardsData.reverse();
-        createCards(cardsData);
+        /* createCards(cardsData); */
+        // ВРЕМЕННЫЙ КОСТЫЛЬ пока не напишем класс Section
+        createCards({
+            initialCards: cardsData, 
+            api: api,
+            userId: userId,
+            template: '#cardsListTemplate'})
     })
     .catch((err) => {
         console.log(err);
     });
 
-    // также сразу вызвал методы, относящиеся к Api addNewCard, setUserInfo, changeAvatar (через объект api)
+// также сразу вызвал методы, относящиеся к Api addNewCard, setUserInfo, changeAvatar (через объект api)
 
+// далее создадим функцию, которая будет создавать объект класса Card и возвращать созданную карточку по шаблону 
+// по заданию должен быть один метод класса, который возвращает готовую карточку
+const createNewCard = (data) => {
+    const card = new Card(
+        data,
+        api,
+        userId,
+        '#cardsListTemplate');
+
+    return card.createCard();
+};
 
 
 
@@ -88,7 +106,7 @@ const addPlaceFormSubmitHandler = (evt) => {
     api.addNewCard(dataCard)
         .then((res) => {
             // создадим карточку
-            const cardElem = createCard(res);
+            const cardElem = createNewCard(res);
             addCard(cardElem);
 
             // закрыть модальное окно

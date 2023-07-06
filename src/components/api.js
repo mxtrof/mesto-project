@@ -5,7 +5,7 @@ export class Api {
         this.headers = authorizationSettings.headers;
     }
 
-    #checkResult(res) {
+    _checkResult(res) {
         if (res.ok) {
         return res.json(); // возвращаем вызов метода json
         }
@@ -16,14 +16,14 @@ export class Api {
         return fetch(`${this.url}/users/me`, {
             headers: this.headers
         })
-        .then(this.#checkResult);
+        .then(this._checkResult);
     }
     
     getInitialCards() {
         return fetch(`${this.url}/cards`, {
             headers: this.headers
         })
-        .then(this.#checkResult);
+        .then(this._checkResult);
     }
     
     addNewCard(dataCard) {
@@ -32,7 +32,7 @@ export class Api {
             headers: this.headers,
             body: JSON.stringify(dataCard)
         })
-        .then(this.#checkResult);
+        .then(this._checkResult);
     }
     
     setUserInfo(dataUser) {
@@ -41,7 +41,7 @@ export class Api {
             headers: this.headers,
             body: JSON.stringify(dataUser)
         })
-        .then(this.#checkResult);
+        .then(this._checkResult);
     }
     
     deleteCard(cardId) {
@@ -49,7 +49,7 @@ export class Api {
             method: 'DELETE',
             headers: this.headers
         })
-        .then(this.#checkResult);
+        .then(this._checkResult);
     }
     
     setLikeCard(cardId) {
@@ -57,7 +57,7 @@ export class Api {
             method: 'PUT',
             headers: this.headers
         })
-        .then(this.#checkResult);
+        .then(this._checkResult);
     }
     
     deleteLikeCard(cardId) {
@@ -65,7 +65,7 @@ export class Api {
             method: 'DELETE',
             headers: this.headers
         })
-        .then(this.#checkResult);
+        .then(this._checkResult);
     }
     
     changeAvatar(datalink) {
@@ -74,7 +74,7 @@ export class Api {
             headers: this.headers,
             body: JSON.stringify(datalink)
         })
-        .then(this.#checkResult);
+        .then(this._checkResult);
     }
 }
 
