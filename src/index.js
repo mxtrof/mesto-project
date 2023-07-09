@@ -16,18 +16,20 @@ import {
     editProfileModalJobInput,
     editAvatarLinkInput,
     imageModal,
+    cardsList,
     addPlaceModal,
     editProfileModal,
     editAvatarModal
 } from './components/constants.js';
 
-import {Popup} from './components/modal.js';
+import { Popup } from './components/modal.js';
 
 import { enableValidation, toggleButtonState, getFormElements } from './components/validate.js';
-import { addCard, createCard, createCards } from './components/card.js';
+/* import { addCard, createCard, createCards } from './components/card.js'; */
 /* import { getUserInfo, getInitialCards, addNewCard, setUserInfo, changeAvatar } from './components/api'; */
 import { Api } from './components/api.js';
 import { Card } from './components/card.js';
+import { Section } from './components/section.js';
 
 export let userId = "";
 
@@ -40,6 +42,7 @@ const api = new Api({
     }
 })
 
+
 // вызываем основные методы класса Api для отображения данных на странице при первом входе
 Promise.all([api.getUserInfo(), api.getInitialCards()])
     .then(([userData, cardsData]) => {
@@ -50,13 +53,14 @@ Promise.all([api.getUserInfo(), api.getInitialCards()])
         updateAvatar(userData.avatar);
         // выведем считанные карточки
         cardsData.reverse();
-        /* createCards(cardsData); */
-        // ВРЕМЕННЫЙ КОСТЫЛЬ пока не напишем класс Section
-        createCards({
-            initialCards: cardsData, 
-            api: api,
-            userId: userId,
-            template: '#cardsListTemplate'})
+
+        createNewSection(cardsData).renderItems();
+        /*         createCards({
+                    initialCards: cardsData, 
+                    api: api,
+                    userId: userId,
+                    template: '#cardsListTemplate'}) */
+
     })
     .catch((err) => {
         console.log(err);
@@ -75,6 +79,20 @@ const createNewCard = (data) => {
 
     return card.createCard();
 };
+
+// по условия задачи "Экземпляр класса Section создается для каждого контейнера, в который требуется отрисовывать элементы"
+// поэтому сразу создадим функцию, которая будет это делать
+const createNewSection = (data) => {
+    const sectionCards = new Section({
+        items: data,
+        renderer: (item) => {
+            sectionCards.addItem(createNewCard(item));
+        },
+    },
+        cardsList
+    );
+    return sectionCards;
+}
 
 
 
@@ -107,7 +125,9 @@ const addPlaceFormSubmitHandler = (evt) => {
         .then((res) => {
             // создадим карточку
             const cardElem = createNewCard(res);
-            addCard(cardElem);
+
+            /* addCard(cardElem); */
+            createNewSection().addItem(cardElem);
 
             // закрыть модальное окно
             closeModal(addPlaceModal);
@@ -237,5 +257,4 @@ enableValidation(validationSettings, formEditAvatar);
         console.log(err);
     }); */
 
-    
-   
+
