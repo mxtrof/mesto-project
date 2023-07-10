@@ -1,19 +1,20 @@
 // import { openModal } from './modal.js';
 /* import { userId } from '../index.js'; */
 /* import { deleteCard, deleteLikeCard, setLikeCard } from './api.js'; */
-import {
+/* import {
     imageModal,
     popupImage,
     popupCaption,
     cardsListTemplateHtml,
     cardsList
-} from './constants.js';
+} from './constants.js'; */
 
 
 export class Card {
 
-    constructor(dataCard, api, userId, templateSelector) {
+    constructor(dataCard, handleCardClick, api, userId, templateSelector) {
         this.templateSelector = templateSelector;
+        this._handleCardClick = handleCardClick;
         this.name = dataCard.name;
         this.link = dataCard.link;
         this.userId = userId;
@@ -60,9 +61,10 @@ export class Card {
         this.buttonDelete.addEventListener('click', this._deletePlaceHandler);
 
         // Добавим обработчик-слушатель для открытия фото в модальном окне
-        this.cardElement.querySelector('.element__image').addEventListener('click', function (evt) {
+/*         this.cardElement.querySelector('.element__image').addEventListener('click', function (evt) {
             openImageHandler(evt);
-        });
+        }); */
+        this.cardElement.querySelector('.element__image').addEventListener('click', this._handleCardClick);
 
         return this.cardElement;
     }
@@ -213,9 +215,9 @@ function updateLikeContainer(evt, likeCount, cardElement, likeButton) {
 ///////////////////////// Похоже, что не относятся к классу Card, т.к. отвечают за отрисовку, видимо это класс Section
 // задание звучит как "Организуйте в классе Card код, который создаёт карточку с текстом и ссылкой на изображение"
 
-export const addCard = (cardElem) => {
+/* export const addCard = (cardElem) => {
     cardsList.prepend(cardElem);
-}
+} */
 
 /* export const createCards = (initialCards) => {
 
@@ -226,7 +228,7 @@ export const addCard = (cardElem) => {
 
 } */
 
-export const createCards = (dataObj) => {
+/* export const createCards = (dataObj) => {
 
     dataObj.initialCards.forEach(function (item) {
         const cardElem = createNewCard(item, dataObj.api, dataObj.userId, dataObj.template);
@@ -244,11 +246,11 @@ const createNewCard = (data, api, userId, template) => {
         template);
 
     return card.createCard();
-};
+}; */
 
 // ЭТО КОСТЫЛЬ, хэндлер должен передаваться видимо из index.js при инициализации, в данном класса только его использование
 // по заданию "Сделайте так, чтобы Card принимал в конструктор функцию handleCardClick. При клике на карточку эта функция должна открывать попап с картинкой."
-function openImageHandler(evt) {
+/* function openImageHandler(evt) {
 
     // получим параметры картинки
     const elemImage = evt.target.closest('.element__image');
@@ -262,4 +264,4 @@ function openImageHandler(evt) {
 
     // откроем окно
     openModal(imageModal);
-}
+} */

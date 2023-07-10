@@ -30,8 +30,8 @@ export class Popup {
       this._popup = document.querySelector(popupSelector)
     }
   
-   openModal () {
-      this._popup .classList.add('popup_opened');
+   openModal() {
+      this._popup.classList.add('popup_opened');
       document.addEventListener('keydown', this._closeByEsc)
       this.setEventListeners()
   }
