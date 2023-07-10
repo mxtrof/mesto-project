@@ -30,6 +30,7 @@ import { enableValidation, toggleButtonState, getFormElements } from './componen
 import { Api } from './components/api.js';
 import { Card } from './components/card.js';
 import { Section } from './components/section.js';
+import { PopupWithImage } from './components/popupWithImage.js';
 
 export let userId = "";
 
@@ -73,6 +74,7 @@ Promise.all([api.getUserInfo(), api.getInitialCards()])
 const createNewCard = (data) => {
     const card = new Card(
         data,
+        () => popupImage.openModal(data.link, data.name), // тут вызываем стрелочную функцию, чтобы передать как параметр вызов метода openModal для слушателя
         api,
         userId,
         '#cardsListTemplate');
@@ -93,6 +95,13 @@ const createNewSection = (data) => {
     );
     return sectionCards;
 }
+
+// объявляем экземпляр класса PopupWithImage, чтобы активировать конструктор и подготовить все элементы дл яотображения
+const popupImage = new PopupWithImage(
+    '.popup_type_image',
+    '.popup__image',
+    '.popup__image-caption');
+
 
 
 
