@@ -21,7 +21,7 @@ import {
     editAvatarModal
 } from './components/constants.js';
 
-import {Popup} from './components/modal.js';
+import {Popup} from './components/Popup.js';
 
 import { enableValidation, toggleButtonState, getFormElements } from './components/validate.js';
 import { addCard, createCard, createCards } from './components/card.js';
@@ -39,6 +39,9 @@ const api = new Api({
         'Content-Type': 'application/json'
     }
 })
+const modalClassMesto = new Popup('.popup_type_addPlace');
+const modalClassProfil = new Popup('.popup_type_editProfile');
+const modalClassAvatar = new Popup('.popup_type_editAvatar');
 
 // вызываем основные методы класса Api для отображения данных на странице при первом входе
 Promise.all([api.getUserInfo(), api.getInitialCards()])
@@ -123,31 +126,42 @@ const addPlaceFormSubmitHandler = (evt) => {
         })
 }
 
-const editProfileFormSubmitHandler = (evt) => {
-    evt.preventDefault();
+// class UserInfo {
+//     contructor({nameSelector, jobSelector}){
+//         this._name = nameSelector;
+//         this._about = jobSelector
+//     }   
+//     getUserInfo(){
+//         return{ name: this._name, about: this._about };
+//     }
 
-    const nameInput = editProfileModalNameInput.value;
-    const jobInput = editProfileModalJobInput.value;
+// }
+// console.log(new UserInfo({name:editProfileModalNameInput.value, about:editProfileModalJobInput.value}).getUserInfo())
+// const editProfileFormSubmitHandler = (evt) => {
+//     evt.preventDefault();
 
-    const dataUser = { name: nameInput, about: jobInput };
+//     // const nameInput = editProfileModalNameInput.value;
+//     // const jobInput = editProfileModalJobInput.value;
 
-    updateLoadingText(true, formEditProfile, validationSettings);
+//     const dataUser = new UserInfo({name: editProfileModalNameInput.value, about: editProfileModalJobInput.value}).getUserInfo();
 
-    api.setUserInfo(dataUser)
-        .then((res) => {
-            // обновим данные профиля
-            profileName.textContent = res.name;
-            profileDescription.textContent = res.about;
+//     updateLoadingText(true, formEditProfile, validationSettings);
 
-            closeModal(editProfileModal);
-        })
-        .catch((err) => {
-            console.log(err);
-        })
-        .finally(() => {
-            updateLoadingText(false, formEditProfile, validationSettings);
-        })
-}
+//     api.setUserInfo(dataUser)
+//         .then((res) => {
+//             // обновим данные профиля
+//             profileName.textContent = res.name;
+//             profileDescription.textContent = res.about;
+
+//             closeModal(editProfileModal);
+//         })
+//         .catch((err) => {
+//             console.log(err);
+//         })
+//         .finally(() => {
+//             updateLoadingText(false, formEditProfile, validationSettings);
+//         })
+// }
 
 function editAvatarFormSubmitHandler(evt) {
     evt.preventDefault();
@@ -171,7 +185,7 @@ function editAvatarFormSubmitHandler(evt) {
 }
 
 const openAddPlaceModal = () => {
-    new Popup('.popup_type_addPlace').openModal()
+    modalClassMesto.openModal()
 
     // определение состояния кнопки на форме после открытия
     const formElements = getFormElements(validationSettings, formAddPlace);
@@ -182,7 +196,7 @@ const openProfileModal = () => {
 
     editProfileModalNameInput.value = profileName.textContent;
     editProfileModalJobInput.value = profileDescription.textContent;
-    new Popup('.popup_type_editProfile').openModal()
+    modalClassProfil.openModal()
 
     // определение состояния кнопки на форме после открытия
     const formElements = getFormElements(validationSettings, formEditProfile);
@@ -190,7 +204,7 @@ const openProfileModal = () => {
 }
 
 const openEditAvatarModal = () => {
-    new Popup('.popup_type_editAvatar').openModal()
+    modalClassAvatar.openModal()
 
     // определение состояния кнопки на форме после открытия
     const formElements = getFormElements(validationSettings, editAvatarModal);
@@ -214,7 +228,7 @@ editAvatarButton.addEventListener('click', openEditAvatarModal);
 
 // обработчики сабмит модальных форм
 formAddPlace.addEventListener('submit', addPlaceFormSubmitHandler);
-formEditProfile.addEventListener('submit', editProfileFormSubmitHandler);
+// formEditProfile.addEventListener('submit', editProfileFormSubmitHandler);
 formEditAvatar.addEventListener('submit', editAvatarFormSubmitHandler);
 
 // вызов валидации для модальных форм

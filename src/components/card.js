@@ -248,18 +248,18 @@ const createNewCard = (data, api, userId, template) => {
 
 // ЭТО КОСТЫЛЬ, хэндлер должен передаваться видимо из index.js при инициализации, в данном класса только его использование
 // по заданию "Сделайте так, чтобы Card принимал в конструктор функцию handleCardClick. При клике на карточку эта функция должна открывать попап с картинкой."
-function openImageHandler(evt) {
+// function openImageHandler(evt) {
 
-    // получим параметры картинки
-    const elemImage = evt.target.closest('.element__image');
-    const link = elemImage.src;
-    const place = elemImage.alt;
+//     // получим параметры картинки
+//     const elemImage = evt.target.closest('.element__image');
+//     const link = elemImage.src;
+//     const place = elemImage.alt;
 
-    // заполним элементы
-    popupImage.src = link;
-    popupImage.alt = place;
-    popupCaption.textContent = place;
+//     // заполним элементы
+//     popupImage.src = link;
+//     popupImage.alt = place;
+//     popupCaption.textContent = place;
 
-    // откроем окно
-    openModal(imageModal);
-}
+//     // откроем окно
+//     openModal(imageModal);
+// }
