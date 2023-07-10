@@ -16,18 +16,96 @@ import {
     editProfileModalJobInput,
     editAvatarLinkInput,
     imageModal,
+    cardsList,
     addPlaceModal,
     editProfileModal,
     editAvatarModal
 } from './components/constants.js';
 
-import { closeModalClickHandler, closeModal, openModal } from './components/modal.js';
+import { Popup } from './components/modal.js';
 
 import { enableValidation, toggleButtonState, getFormElements } from './components/validate.js';
-import { addCard, createCard, createCards } from './components/card.js';
-import { getUserInfo, getInitialCards, addNewCard, setUserInfo, changeAvatar } from './components/api';
+/* import { addCard, createCard, createCards } from './components/card.js'; */
+/* import { getUserInfo, getInitialCards, addNewCard, setUserInfo, changeAvatar } from './components/api'; */
+import { Api } from './components/api.js';
+import { Card } from './components/card.js';
+import { Section } from './components/section.js';
+import { PopupWithImage } from './components/popupWithImage.js';
 
 export let userId = "";
+
+// создаем объект класса Api
+const api = new Api({
+    url: 'https://mesto.nomoreparties.co/v1/plus-cohort-24',
+    headers: {
+        authorization: 'd8022b50-8c1c-4a15-ba76-94ce65b1ce67',
+        'Content-Type': 'application/json'
+    }
+})
+
+
+// вызываем основные методы класса Api для отображения данных на странице при первом входе
+Promise.all([api.getUserInfo(), api.getInitialCards()])
+    .then(([userData, cardsData]) => {
+        // установим пользовательские данные
+        userId = userData._id;
+        profileName.textContent = userData.name;
+        profileDescription.textContent = userData.about;
+        updateAvatar(userData.avatar);
+        // выведем считанные карточки
+        cardsData.reverse();
+
+        createNewSection(cardsData).renderItems();
+        /*         createCards({
+                    initialCards: cardsData, 
+                    api: api,
+                    userId: userId,
+                    template: '#cardsListTemplate'}) */
+
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+// также сразу вызвал методы, относящиеся к Api addNewCard, setUserInfo, changeAvatar (через объект api)
+
+// далее создадим функцию, которая будет создавать объект класса Card и возвращать созданную карточку по шаблону 
+// по заданию должен быть один метод класса, который возвращает готовую карточку
+const createNewCard = (data) => {
+    const card = new Card(
+        data,
+        () => popupImage.openModal(data.link, data.name), // тут вызываем стрелочную функцию, чтобы передать как параметр вызов метода openModal для слушателя
+        api,
+        userId,
+        '#cardsListTemplate');
+
+    return card.createCard();
+};
+
+// по условия задачи "Экземпляр класса Section создается для каждого контейнера, в который требуется отрисовывать элементы"
+// поэтому сразу создадим функцию, которая будет это делать
+const createNewSection = (data) => {
+    const sectionCards = new Section({
+        items: data,
+        renderer: (item) => {
+            sectionCards.addItem(createNewCard(item));
+        },
+    },
+        cardsList
+    );
+    return sectionCards;
+}
+
+// объявляем экземпляр класса PopupWithImage, чтобы активировать конструктор и подготовить все элементы дл яотображения
+const popupImage = new PopupWithImage(
+    '.popup_type_image',
+    '.popup__image',
+    '.popup__image-caption');
+
+
+
+
+
 
 const updateLoadingText = (process, formElement, validationSettings) => {
 
@@ -52,11 +130,13 @@ const addPlaceFormSubmitHandler = (evt) => {
     updateLoadingText(true, formAddPlace, validationSettings);
 
     // запишем данные на сервере и полученную инфу отразив с списке
-    addNewCard(dataCard)
+    api.addNewCard(dataCard)
         .then((res) => {
             // создадим карточку
-            const cardElem = createCard(res);
-            addCard(cardElem);
+            const cardElem = createNewCard(res);
+
+            /* addCard(cardElem); */
+            createNewSection().addItem(cardElem);
 
             // закрыть модальное окно
             closeModal(addPlaceModal);
@@ -82,7 +162,7 @@ const editProfileFormSubmitHandler = (evt) => {
 
     updateLoadingText(true, formEditProfile, validationSettings);
 
-    setUserInfo(dataUser)
+    api.setUserInfo(dataUser)
         .then((res) => {
             // обновим данные профиля
             profileName.textContent = res.name;
@@ -105,7 +185,7 @@ function editAvatarFormSubmitHandler(evt) {
 
     updateLoadingText(true, formEditAvatar, validationSettings);
 
-    changeAvatar(datLink)
+    api.changeAvatar(datLink)
         .then((res) => {
             updateAvatar(res.avatar);
             formEditAvatar.reset();
@@ -120,7 +200,7 @@ function editAvatarFormSubmitHandler(evt) {
 }
 
 const openAddPlaceModal = () => {
-    openModal(addPlaceModal);
+    new Popup('.popup_type_addPlace').openModal()
 
     // определение состояния кнопки на форме после открытия
     const formElements = getFormElements(validationSettings, formAddPlace);
@@ -131,7 +211,7 @@ const openProfileModal = () => {
 
     editProfileModalNameInput.value = profileName.textContent;
     editProfileModalJobInput.value = profileDescription.textContent;
-    openModal(editProfileModal);
+    new Popup('.popup_type_editProfile').openModal()
 
     // определение состояния кнопки на форме после открытия
     const formElements = getFormElements(validationSettings, formEditProfile);
@@ -139,7 +219,7 @@ const openProfileModal = () => {
 }
 
 const openEditAvatarModal = () => {
-    openModal(editAvatarModal);
+    new Popup('.popup_type_editAvatar').openModal()
 
     // определение состояния кнопки на форме после открытия
     const formElements = getFormElements(validationSettings, editAvatarModal);
@@ -156,10 +236,10 @@ addPlaceButton.addEventListener('click', openAddPlaceModal);
 editAvatarButton.addEventListener('click', openEditAvatarModal);
 
 // обработчики закрытия формы по клику мыши
-editProfileModal.addEventListener('click', closeModalClickHandler);
-addPlaceModal.addEventListener('click', closeModalClickHandler);
-imageModal.addEventListener('click', closeModalClickHandler);
-editAvatarModal.addEventListener('click', closeModalClickHandler);
+// editProfileModal.addEventListener('click', closeModalClickHandler);   /// мы в классе Popup добавляем слушатель для закрытия 
+// addPlaceModal.addEventListener('click', closeModalClickHandler);      /// поэтому эти слушатели не нужны 
+// imageModal.addEventListener('click', closeModalClickHandler);
+// editAvatarModal.addEventListener('click', closeModalClickHandler);
 
 // обработчики сабмит модальных форм
 formAddPlace.addEventListener('submit', addPlaceFormSubmitHandler);
@@ -171,7 +251,7 @@ enableValidation(validationSettings, formAddPlace);
 enableValidation(validationSettings, formEditProfile);
 enableValidation(validationSettings, formEditAvatar);
 
-Promise.all([getUserInfo(), getInitialCards()])
+/* Promise.all([getUserInfo(), getInitialCards()])
     .then(([userData, cardsData]) => {
         // установим пользовательские данные
         userId = userData._id;
@@ -184,4 +264,6 @@ Promise.all([getUserInfo(), getInitialCards()])
     })
     .catch((err) => {
         console.log(err);
-    });
+    }); */
+
+
