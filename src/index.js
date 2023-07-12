@@ -25,8 +25,6 @@ import {
 import { Popup } from './components/Popup.js';
 
 import  {FormValidator}  from './components/FormValidator.js';
-/* import { addCard, createCard, createCards } from './components/card.js'; */
-/* import { getUserInfo, getInitialCards, addNewCard, setUserInfo, changeAvatar } from './components/api'; */
 import { Api } from './components/api.js';
 import { Card } from './components/card.js';
 import { Section } from './components/section.js';
@@ -59,16 +57,23 @@ const profileAvatarValidation = new FormValidator(config, formEditAvatar);
 elementsFormValidation.enableValidation();
 profileFormValidation.enableValidation();
 profileAvatarValidation.enableValidation();
-const  userInfo = new UserInfo({name:'.profile__name', about:'.profile__description'})
 
+//ЭКЗЕМПЛЯР КЛАССА UserInfo
+
+const userInfo = new UserInfo({
+    userName: profileName,
+    userDescription: profileDescription,
+    userAvatar: profileAvatar
+  });
 
 // вызываем основные методы класса Api для отображения данных на странице при первом входе
 // 
 Promise.all([api.getUserInfo(), api.getInitialCards()])
-    .then(([data, cardsData]) => {
-        userId = data._id;
-        userInfo.setUserInfo(data)
-        userInfo.setUserAvatar(data)
+    .then(([dataUser, cardsData]) => {
+        userId = dataUser._id;
+        userInfo.setUserInfo(dataUser)
+        userInfo.setUserAvatar(dataUser)
+        userInfo.setUserInfo(dataUser)
         // updateAvatar(userData.avatar);
         // выведем считанные карточки
         cardsData.reverse();
@@ -78,8 +83,6 @@ Promise.all([api.getUserInfo(), api.getInitialCards()])
     .catch((err) => {
         console.log(err);
     });
-
-
 
 // // также сразу вызвал методы, относящиеся к Api addNewCard, setUserInfo, changeAvatar (через объект api)
 
@@ -115,67 +118,9 @@ const popupImage = new PopupWithImage(
     '.popup_type_image',
     '.popup__image',
     '.popup__image-caption');
-// 
-
-const addPlaceFormSubmitHandler = (evt) => {
-
-    evt.preventDefault();
-
-    const placeInput = addPlaceModalPlaceInput.value;
-    const linkInput = addPlaceModalLinkInput.value;
-
-    const dataCard = { name: placeInput, link: linkInput };
-
-    updateLoadingText(true, formAddPlace, validationSettings);
-
-    // запишем данные на сервере и полученную инфу отразив с списке
-    api.addNewCard(dataCard)
-        .then((res) => {
-            // создадим карточку
-            const cardElem = createNewCard(res);
-
-            /* addCard(cardElem); */
-            createNewSection().addItem(cardElem);
-
-            // закрыть модальное окно
-            modalClassAddPlace.closeModal();
-
-            // очистим поля формы
-            formAddPlace.reset();
-        })
-        .catch((err) => {
-            console.log(err);
-        })
-        .finally(() => {
-            updateLoadingText(false, formAddPlace, validationSettings);
-        })
-}
-
-
-function editAvatarFormSubmitHandler(evt) {
-    evt.preventDefault();
-
-    const datLink = { avatar: editAvatarLinkInput.value };
-
-    updateLoadingText(true, formEditAvatar, validationSettings);
-
-    api.changeAvatar(datLink)
-        .then((res) => {
-            updateAvatar(res.avatar);
-            formEditAvatar.reset();
-            modalClassEditAvatar.closeModal();
-        })
-        .catch((err) => {
-            console.log(err);
-        })
-        .finally(() => {
-            updateLoadingText(false, formEditAvatar, validationSettings);
-        })
-}
 
 const openAddPlaceModal = () => {
     modalClassAddPlace.openModal()
-
     // определение состояния кнопки на форме после открытия
     elementsFormValidation.cleanInputErrorValidation()
 }
@@ -184,11 +129,9 @@ const openProfileModal = () => {
     editProfileModalNameInput.value = profileName.textContent;
     editProfileModalJobInput.value = profileDescription.textContent;
     modalClassEditProfile.openModal()
-    
 
     // определение состояния кнопки на форме после открытия
     profileFormValidation.cleanInputErrorValidation();
- 
 }
 
 const openEditAvatarModal = () => {
@@ -198,10 +141,6 @@ const openEditAvatarModal = () => {
     profileAvatarValidation.cleanInputErrorValidation()
 }
 
-// function updateAvatar(link) {
-//     profileAvatar.src = link;
-// }
-
 // // обработчики открытия модальных форм
 editProfileButton.addEventListener('click', openProfileModal);
 addPlaceButton.addEventListener('click', openAddPlaceModal);
@@ -209,18 +148,15 @@ editAvatarButton.addEventListener('click', openEditAvatarModal);
 
 
 
-// ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (Profile)
+// ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (editProfile)
 
 const popupFormProfile = new PopupWithForm({
   popupSelector: '.popup_type_editProfile',
   handleFormSubmit: (data) => {
     popupFormProfile.renderLoading(false);
-    console.log(data)
+
     api.setUserInfo(data)
       .then((res) => {
-        //  profileName.textContent = res.name;
-        //     profileDescription.textContent = res.about;
-        // console.log(res)
         userInfo.setUserInfo(res)
       })
       .catch((err) => {
@@ -236,51 +172,52 @@ const popupFormProfile = new PopupWithForm({
 
 popupFormProfile.setEventListeners();
 
-// // ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (Elements)
+// ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (addPlace)
 
-// const popupFormElements = new PopupWithForm({
-//   popupSelector: '.popup_type_elements',
-//   handleFormSubmit: (data) => {
-//     popupFormElements.renderLoading(false);
-//     api.postCard(data)
-//       .then((res) => {
-//         cardList.setItem(createCard(res), true);
-//       })
-//       .catch((err) => {
-//         console.error(err);
-//       })
-//       .finally(() => {
-//         popupFormElements.renderLoading(true);
-//     })
-//   }
-// })
+const popupFormAddPlace = new PopupWithForm({
+  popupSelector: '.popup_type_addPlace',
+  handleFormSubmit: (data) => {
+    popupFormAddPlace.renderLoading(false);
+    api.addNewCard(data)
+      .then((res) => {
+        const cardElem = createNewCard(res);
+        createNewSection().addItem(cardElem);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        popupFormAddPlace.renderLoading(true);
+    })
+  }
+})
 
-// // МЕТОДЫ КЛАССА PopupWithForm 
+// МЕТОДЫ КЛАССА PopupWithForm 
 
-// popupFormElements.setEventListeners();
+popupFormAddPlace.setEventListeners();
 
-// // ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (Avatar)
+// ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (Avatar)
 
-// const popupFormAvatar = new PopupWithForm({
-//   popupSelector: '.popup_type_avatar',
-//   handleFormSubmit: (data) => {
-//     popupFormAvatar.renderLoading(false);
-//     api.patchUserAvatar(data)
-//       .then((res) => {
-//         userInfo.setUserAvatar(res);
-//       })
-//       .catch((err) => {
-//       console.error(err);
-//       })
-//       .finally(() => {
-//       popupFormAvatar.renderLoading(true);
-//     })
-//   }
-// })
+const popupFormAvatar = new PopupWithForm({
+  popupSelector: '.popup_type_editAvatar',
+  handleFormSubmit: (data) => {
+    popupFormAvatar.renderLoading(false);
+    api.changeAvatar(data)
+      .then((res) => {
+        userInfo.setUserInfo(res);
+      })
+      .catch((err) => {
+      console.error(err);
+      })
+      .finally(() => {
+      popupFormAvatar.renderLoading(true);
+    })
+  }
+})
 
-// // МЕТОДЫ КЛАССА PopupWithForm (Avatar)
+// МЕТОДЫ КЛАССА PopupWithForm (Avatar)
 
-// popupFormAvatar.setEventListeners();
+popupFormAvatar.setEventListeners();
 
 
 
@@ -329,17 +266,6 @@ popupFormProfile.setEventListeners();
 //     .catch((err) => {
 //         console.log(err);
 //     });
-
-
-
-
-
-
-
-
-
-
-
 
 // /* Promise.all([getUserInfo(), getInitialCards()])
 //     .then(([userData, cardsData]) => {
@@ -407,3 +333,58 @@ popupFormProfile.setEventListeners();
 // formEditAvatar.addEventListener('submit', editAvatarFormSubmitHandler);
 // // new PopupWithForm('.popup_type_editProfile', editProfileFormSubmitHandler, formEditProfile)
 // // new PopupWithForm('.popup_type_editProfile', editProfileFormSubmitHandler, formEditProfile).setEventListeners()
+
+
+// function editAvatarFormSubmitHandler(evt) {
+//     evt.preventDefault();
+
+//     const datLink = { avatar: editAvatarLinkInput.value };
+
+//     updateLoadingText(true, formEditAvatar, validationSettings);
+
+//     api.changeAvatar(datLink)
+//         .then((res) => {
+//             updateAvatar(res.avatar);
+//             formEditAvatar.reset();
+//             modalClassEditAvatar.closeModal();
+//         })
+//         .catch((err) => {
+//             console.log(err);
+//         })
+//         .finally(() => {
+//             updateLoadingText(false, formEditAvatar, validationSettings);
+//         })
+// }
+// const addPlaceFormSubmitHandler = (evt) => {
+
+//     evt.preventDefault();
+
+//     const placeInput = addPlaceModalPlaceInput.value;
+//     const linkInput = addPlaceModalLinkInput.value;
+
+//     const dataCard = { name: placeInput, link: linkInput };
+
+//     updateLoadingText(true, formAddPlace, validationSettings);
+
+//     // запишем данные на сервере и полученную инфу отразив с списке
+//     api.addNewCard(dataCard)
+//         .then((res) => {
+//             // создадим карточку
+//             const cardElem = createNewCard(res);
+
+//             /* addCard(cardElem); */
+//             createNewSection().addItem(cardElem);
+
+//             // закрыть модальное окно
+//             modalClassAddPlace.closeModal();
+
+//             // очистим поля формы
+//             formAddPlace.reset();
+//         })
+//         .catch((err) => {
+//             console.log(err);
+//         })
+//         .finally(() => {
+//             updateLoadingText(false, formAddPlace, validationSettings);
+//         })
+// }

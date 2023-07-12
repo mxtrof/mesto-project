@@ -40,7 +40,7 @@
       <form class="popup__form popup__form-editProfile" name="editProfile" id="formEditProfile" novalidate>
         <input type="text" class="popup__input popup__input_content_name" name="name" placeholder="Введите ФИО" required minlength="2" maxlength="40" id="name-input" pattern="^[а-яА-Яa-zA-Z -]+$" data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы">
         <span class="popup__input-error name-input-error"></span>
-        <input type="text" class="popup__input popup__input_content_description" name="description" placeholder="Введите профессию" required minlength="2" maxlength="200" id="description-input">
+        <input type="text" class="popup__input popup__input_content_description" name="about" placeholder="Введите профессию" required minlength="2" maxlength="200" id="description-input">
         <span class="popup__input-error description-input-error"></span>
         <button class="popup__save-button" type="submit" form="formEditProfile">Сохранить</button>
       </form> 
@@ -53,7 +53,7 @@
       <form class="popup__form popup__form-addPlace" name="editProfile" id="formAddPlace" novalidate>
         <input type="text" class="popup__input popup__input_content_place" name="name" placeholder="Название" required minlength="2" maxlength="30" id="name-input" pattern="^[а-яА-Яa-zA-Z -]+$" data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы">
         <span class="popup__input-error name-input-error"></span>
-        <input type="url" class="popup__input popup__input_content_link" name="description" placeholder="Ссылка на картинку" required id="link-input">
+        <input type="url" class="popup__input popup__input_content_link" name="link" placeholder="Ссылка на картинку" required id="link-input">
         <span class="popup__input-error link-input-error"></span>
         <button class="popup__save-button" type="submit" form="formAddPlace">Сохранить</button>
       </form> 
@@ -73,7 +73,7 @@
       <button class="popup__close-button modal-close" type="button" aria-label="Кнопка закрытия окна"></button>
       <h2 class="popup__title">Обновить аватар</h2>
       <form class="popup__form popup__form-editAvatar" name="editAvatar" id="formeditAvatar" novalidate>
-        <input type="url" class="popup__input popup__input_avatar_link" name="avatarLink" placeholder="Ссылка на картинку" required id="avatarlink-input">
+        <input type="url" class="popup__input popup__input_avatar_link" name="avatar" placeholder="Ссылка на картинку" required id="avatarlink-input">
         <span class="popup__input-error avatarlink-input-error"></span>
         <button class="popup__save-button" type="submit">Сохранить</button>
       </form>

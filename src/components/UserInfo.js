@@ -1,31 +1,9 @@
-// export class UserInfo {
-//     constructor({name, about}){
-//         this._name = document.querySelector(name),
-//         this._about = document.querySelector(about)
-//     }
-//     setUserInfo(res){
-//         this._name.textContent = res.name;
-//         this._about.textContent = res.about;
-//         // return {name: this._name.value, about: this._about.value }
-//     }
-//     getUserInfo(api){
-//         // api.setUserInfo()
-//         // .then((res) => {
-//         //     return {name: res.name, about: res.about}
-//         //     // profileName.textContent = res.name;
-//         //     // profileDescription.textContent = res.about;
-//         // })
-//         // .catch((err) => {
-//         //     console.log(err);
-//         // })
-//     }
 
-// }
 export class UserInfo {
     constructor({ userName, userDescription, userAvatar }) {
-      this._userNameElem = document.querySelector(userName);
-      this._userDescriptionElem = document.querySelector(userDescription);
-      this._userAvatarElem = document.querySelector(userAvatar);
+      this._userNameElem = userName;
+      this._userDescriptionElem = userDescription;
+      this._userAvatarElem = userAvatar;
     }
   
     getUserInfo() {
@@ -35,7 +13,7 @@ export class UserInfo {
       }
     }
   
-    setUserInfo=(data) =>{
+    setUserInfo(data) {
       this._userNameElem.textContent = data.name;
       this._userDescriptionElem.textContent = data.about;
     }
