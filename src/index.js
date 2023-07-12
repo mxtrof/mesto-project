@@ -10,16 +10,9 @@ import {
     editProfileButton,
     editAvatarButton,
     addPlaceButton,
-    addPlaceModalPlaceInput,
-    addPlaceModalLinkInput,
     editProfileModalNameInput,
     editProfileModalJobInput,
-    editAvatarLinkInput,
-    imageModal,
-    cardsList,
-    addPlaceModal,
-    editProfileModal,
-    editAvatarModal
+    cardsList
 } from './components/constants.js';
 
 import { Popup } from './components/Popup.js';
@@ -29,7 +22,7 @@ import { Api } from './components/api.js';
 import { Card } from './components/card.js';
 import { Section } from './components/section.js';
 import { PopupWithImage } from './components/popupWithImage.js';
-import { UserInfo } from './components/UserInfo.js';
+import { UserInfo } from './components/userInfo.js';
 import { PopupWithForm } from './components/popupWithForm';
 
 export let userId = "";
@@ -52,7 +45,7 @@ const elementsFormValidation = new FormValidator(config, formAddPlace);
 const profileFormValidation = new FormValidator(config, formEditProfile);
 const profileAvatarValidation = new FormValidator(config, formEditAvatar);
 
-// // МЕТОДЫ КЛАССА FormValidator
+// МЕТОДЫ КЛАССА FormValidator
 
 elementsFormValidation.enableValidation();
 profileFormValidation.enableValidation();
@@ -73,20 +66,19 @@ Promise.all([api.getUserInfo(), api.getInitialCards()])
         userId = dataUser._id;
         userInfo.setUserInfo(dataUser)
         userInfo.setUserAvatar(dataUser)
-        // updateAvatar(userData.avatar);
+        
         // выведем считанные карточки
         cardsData.reverse();
-
         createNewSection(cardsData).renderItems();
     })
     .catch((err) => {
         console.log(err);
     });
 
-// // также сразу вызвал методы, относящиеся к Api addNewCard, setUserInfo, changeAvatar (через объект api)
+// также сразу вызвал методы, относящиеся к Api addNewCard, setUserInfo, changeAvatar (через объект api)
 
-// // далее создадим функцию, которая будет создавать объект класса Card и возвращать созданную карточку по шаблону 
-// // по заданию должен быть один метод класса, который возвращает готовую карточку
+// далее создадим функцию, которая будет создавать объект класса Card и возвращать созданную карточку по шаблону 
+// по заданию должен быть один метод класса, который возвращает готовую карточку
 const createNewCard = (data) => {
     const card = new Card(
         data,
@@ -98,8 +90,8 @@ const createNewCard = (data) => {
     return card.createCard();
 };
 
-// // по условия задачи "Экземпляр класса Section создается для каждого контейнера, в который требуется отрисовывать элементы"
-// // поэтому сразу создадим функцию, которая будет это делать
+// по условия задачи "Экземпляр класса Section создается для каждого контейнера, в который требуется отрисовывать элементы"
+// поэтому сразу создадим функцию, которая будет это делать
 const createNewSection = (data) => {
     const sectionCards = new Section({
         items: data,
@@ -112,7 +104,7 @@ const createNewSection = (data) => {
     return sectionCards;
 }
 
-// // объявляем экземпляр класса PopupWithImage, чтобы активировать конструктор и подготовить все элементы дл яотображения
+// объявляем экземпляр класса PopupWithImage, чтобы активировать конструктор и подготовить все элементы дл яотображения
 const popupImage = new PopupWithImage(
     '.popup_type_image',
     '.popup__image',
@@ -125,8 +117,11 @@ const openAddPlaceModal = () => {
 }
 
 const openProfileModal = () => {
-    editProfileModalNameInput.value = profileName.textContent;
-    editProfileModalJobInput.value = profileDescription.textContent;
+
+    const userInformation = userInfo.getUserInfo();
+    editProfileModalNameInput.value = userInformation.userName;
+    editProfileModalJobInput.value = userInformation.userDescription;
+
     modalClassEditProfile.openModal()
 
     // определение состояния кнопки на форме после открытия
@@ -144,7 +139,6 @@ const openEditAvatarModal = () => {
 editProfileButton.addEventListener('click', openProfileModal);
 addPlaceButton.addEventListener('click', openAddPlaceModal);
 editAvatarButton.addEventListener('click', openEditAvatarModal);
-
 
 
 // ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (editProfile)
@@ -203,7 +197,7 @@ const popupFormAvatar = new PopupWithForm({
     popupFormAvatar.renderLoading(false);
     api.changeAvatar(data)
       .then((res) => {
-        userInfo.setUserInfo(res);
+        userInfo.setUserAvatar(res);
       })
       .catch((err) => {
       console.error(err);
@@ -217,173 +211,3 @@ const popupFormAvatar = new PopupWithForm({
 // МЕТОДЫ КЛАССА PopupWithForm (Avatar)
 
 popupFormAvatar.setEventListeners();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Promise.all([api.getUserInfo(), api.getInitialCards()])
-//     .then(([userData, cardsData]) => {
-//         // установим пользовательские данные
-//         userId = userData._id;
-//         // profileName.textContent = userData.name;
-//         // profileDescription.textContent = userData.about;
-//         userInfo.setUserInfo(res)
-//         userInfo.setUserAvatar(res)
-//         // updateAvatar(userData.avatar);
-//         // выведем считанные карточки
-//         cardsData.reverse();
-
-//         createNewSection(cardsData).renderItems();
-//         /*         createCards({
-//                     initialCards: cardsData, 
-//                     api: api,
-//                     userId: userId,
-//                     template: '#cardsListTemplate'}) */
-
-//     })
-//     .catch((err) => {
-//         console.log(err);
-//     });
-
-// /* Promise.all([getUserInfo(), getInitialCards()])
-//     .then(([userData, cardsData]) => {
-//         // установим пользовательские данные
-//         userId = userData._id;
-//         profileName.textContent = userData.name;
-//         profileDescription.textContent = userData.about;
-//         updateAvatar(userData.avatar);
-//         // выведем считанные карточки
-//         cardsData.reverse();
-//         createCards(cardsData);
-//     })
-//     .catch((err) => {
-//         console.log(err);
-//     }); */
-
-
-// const updateLoadingText = (process, formElement, validationSettings) => {
-
-    //     const formElements = getFormElements(validationSettings, formElement);
-    
-    //     if (process) {
-    //         formElements.buttonElement.textContent = 'Сохранение...';
-    //     } else {
-    //         formElements.buttonElement.textContent = 'Сохранить';
-    //     }
-    // }
-
-
-    // const editProfileFormSubmitHandler = (evt) => {
-//     evt.preventDefault();
-    
-//     const nameInput = editProfileModalNameInput.value;
-//     const jobInput = editProfileModalJobInput.value;
-//     const dataUser = { name: nameInput, about: jobInput };
-
-//     updateLoadingText(true, formEditProfile, validationSettings);
-
-//     api.setUserInfo(dataUser)
-//         .then((res) => {
-//             // обновим данные профиля
-//             // profileName.textContent = res.name;
-//             // profileDescription.textContent = res.about;
-//             userInfo.setUserInfo(res)
-
-//             modalClassEditProfile.closeModal();
-//         })
-//         .catch((err) => {
-//             console.log(err);
-//         })
-//         .finally(() => {
-//             updateLoadingText(false, formEditProfile, validationSettings);
-//         })
-// }
-
-// // обработчики закрытия формы по клику мыши
-// // editProfileModal.addEventListener('click', closeModalClickHandler);   /// мы в классе Popup добавляем слушатель для закрытия 
-// // addPlaceModal.addEventListener('click', closeModalClickHandler);      /// поэтому эти слушатели не нужны 
-// // imageModal.addEventListener('click', closeModalClickHandler);
-// // editAvatarModal.addEventListener('click', closeModalClickHandler);
-
-// // обработчики сабмит модальных форм
-// formAddPlace.addEventListener('submit', addPlaceFormSubmitHandler);
-// // formEditProfile.addEventListener('submit', editProfileFormSubmitHandler);
-// formEditAvatar.addEventListener('submit', editAvatarFormSubmitHandler);
-// // new PopupWithForm('.popup_type_editProfile', editProfileFormSubmitHandler, formEditProfile)
-// // new PopupWithForm('.popup_type_editProfile', editProfileFormSubmitHandler, formEditProfile).setEventListeners()
-
-
-// function editAvatarFormSubmitHandler(evt) {
-//     evt.preventDefault();
-
-//     const datLink = { avatar: editAvatarLinkInput.value };
-
-//     updateLoadingText(true, formEditAvatar, validationSettings);
-
-//     api.changeAvatar(datLink)
-//         .then((res) => {
-//             updateAvatar(res.avatar);
-//             formEditAvatar.reset();
-//             modalClassEditAvatar.closeModal();
-//         })
-//         .catch((err) => {
-//             console.log(err);
-//         })
-//         .finally(() => {
-//             updateLoadingText(false, formEditAvatar, validationSettings);
-//         })
-// }
-// const addPlaceFormSubmitHandler = (evt) => {
-
-//     evt.preventDefault();
-
-//     const placeInput = addPlaceModalPlaceInput.value;
-//     const linkInput = addPlaceModalLinkInput.value;
-
-//     const dataCard = { name: placeInput, link: linkInput };
-
-//     updateLoadingText(true, formAddPlace, validationSettings);
-
-//     // запишем данные на сервере и полученную инфу отразив с списке
-//     api.addNewCard(dataCard)
-//         .then((res) => {
-//             // создадим карточку
-//             const cardElem = createNewCard(res);
-
-//             /* addCard(cardElem); */
-//             createNewSection().addItem(cardElem);
-
-//             // закрыть модальное окно
-//             modalClassAddPlace.closeModal();
-
-//             // очистим поля формы
-//             formAddPlace.reset();
-//         })
-//         .catch((err) => {
-//             console.log(err);
-//         })
-//         .finally(() => {
-//             updateLoadingText(false, formAddPlace, validationSettings);
-//         })
-// }

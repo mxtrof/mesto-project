@@ -80,4 +80,3 @@ export const enableValidation = (validationSettings, formElement) => {
      setEventListeners(validationSettings, formElement);
 };
 
-}
