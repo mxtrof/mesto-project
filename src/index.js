@@ -73,7 +73,6 @@ Promise.all([api.getUserInfo(), api.getInitialCards()])
         userId = dataUser._id;
         userInfo.setUserInfo(dataUser)
         userInfo.setUserAvatar(dataUser)
-        userInfo.setUserInfo(dataUser)
         // updateAvatar(userData.avatar);
         // выведем считанные карточки
         cardsData.reverse();
