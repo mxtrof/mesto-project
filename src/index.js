@@ -13,17 +13,17 @@ import {
     editProfileModalNameInput,
     editProfileModalJobInput,
     cardsList
-} from './components/constants.js';
+} from './utils/Constants.js';
 
 import { Popup } from './components/Popup.js';
 
 import  {FormValidator}  from './components/FormValidator.js';
-import { Api } from './components/api.js';
-import { Card } from './components/card.js';
-import { Section } from './components/section.js';
-import { PopupWithImage } from './components/popupWithImage.js';
-import { UserInfo } from './components/userInfo.js';
-import { PopupWithForm } from './components/popupWithForm';
+import { Api } from './components/Api.js';
+import { Card } from './components/Card.js';
+import { Section } from './components/Section.js';
+import { PopupWithImage } from './components/PopupWithImage.js';
+import { UserInfo } from './components/UserInfo.js';
+import { PopupWithForm } from './components/PopupWithForm';
 
 export let userId = "";
 
@@ -69,7 +69,9 @@ Promise.all([api.getUserInfo(), api.getInitialCards()])
         
         // выведем считанные карточки
         cardsData.reverse();
-        createNewSection(cardsData).renderItems();
+        /* createNewSection(cardsData).renderItems(); */
+        sectionCards.renderItems(cardsData);
+
     })
     .catch((err) => {
         console.log(err);
@@ -92,7 +94,7 @@ const createNewCard = (data) => {
 
 // по условия задачи "Экземпляр класса Section создается для каждого контейнера, в который требуется отрисовывать элементы"
 // поэтому сразу создадим функцию, которая будет это делать
-const createNewSection = (data) => {
+/* const createNewSection = (data) => {
     const sectionCards = new Section({
         items: data,
         renderer: (item) => {
@@ -102,7 +104,14 @@ const createNewSection = (data) => {
         cardsList
     );
     return sectionCards;
-}
+} */
+const sectionCards = new Section({
+    renderer: (item) => {
+        sectionCards.addItem(createNewCard(item));
+    },
+},
+    cardsList
+);
 
 // объявляем экземпляр класса PopupWithImage, чтобы активировать конструктор и подготовить все элементы дл яотображения
 const popupImage = new PopupWithImage(
@@ -174,7 +183,8 @@ const popupFormAddPlace = new PopupWithForm({
     api.addNewCard(data)
       .then((res) => {
         const cardElem = createNewCard(res);
-        createNewSection().addItem(cardElem);
+        /* createNewSection().addItem(cardElem); */
+        sectionCards.addItem(cardElem);
       })
       .catch((err) => {
         console.error(err);
