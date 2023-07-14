@@ -33,9 +33,6 @@ const api = new Api({
         'Content-Type': 'application/json'
     }
 })
-// const modalClassEditProfile = new Popup('.popup_type_editProfile')
-// const modalClassAddPlace = new Popup('.popup_type_addPlace')
-// const modalClassEditAvatar = new Popup('.popup_type_editAvatar')
 
 //ЭКЗЕМПЛЯРЫ КЛАССА FormValidator
 
