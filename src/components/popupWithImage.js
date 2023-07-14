@@ -1,4 +1,4 @@
-import { Popup } from "./Popup"
+import { Popup } from "./modal"
 
 export class PopupWithImage extends Popup {
     constructor(popupSelector, selectorLink, selectorText){
