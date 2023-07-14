@@ -1,4 +1,3 @@
-
 export class FormValidator{
     constructor(config, formElement){
         this._config = config 
@@ -68,7 +67,7 @@ _toggleButtonState  () {
     }
       
   setEventListeners () {
-            // const formElements = this._getFormElements();
+        
         this._toggleButtonState();
             this._inputList.forEach((inputElement) => {
             inputElement.addEventListener('input', () => {

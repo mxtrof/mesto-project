@@ -1,4 +1,3 @@
-
 export class Popup { 
     constructor(popupSelector){
       this._popup = document.querySelector(popupSelector)
@@ -7,7 +6,6 @@ export class Popup {
    openModal () {
       this._popup .classList.add('popup_opened');
       document.addEventListener('keydown', this._closeByEsc)
-      this.setEventListeners()
   }
   
    closeModal() {
@@ -27,8 +25,5 @@ setEventListeners() {
         if (evt.target.classList.contains('modal-close') || evt.target === evt.currentTarget) {
             this.closeModal();
         }
-    })
-      
-     
-  }
-  }
+    })      
+} }
