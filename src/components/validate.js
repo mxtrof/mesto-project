@@ -1,27 +1,23 @@
-class Validate{
-    constructor(validationSettings, formElement){
-        this._settings = validationSettings,
-        this._formElement = formElement
-    }
-showInputError = (validationSettings, formElement, inputElement, errorMessage) => {
+
+const showInputError = (validationSettings, formElement, inputElement, errorMessage) => {
     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
     inputElement.classList.add(validationSettings.inputErrorClass);
     errorElement.textContent = errorMessage;
 };
 
-hideInputError = (validationSettings, formElement, inputElement) => {
+const hideInputError = (validationSettings, formElement, inputElement) => {
     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
     inputElement.classList.remove(validationSettings.inputErrorClass);
     errorElement.textContent = '';
 };
 
-hasInvalidInput(inputList) {
+function hasInvalidInput(inputList) {
     return inputList.some((inputElement) => {
         return !inputElement.validity.valid;
     });
 };
 
-checkInputValidity = (validationSettings, formElement, inputElement) => {
+const checkInputValidity = (validationSettings, formElement, inputElement) => {
 
     if (inputElement.validity.patternMismatch) {
         // встроенный метод setCustomValidity принимает на вход строку
@@ -40,7 +36,7 @@ checkInputValidity = (validationSettings, formElement, inputElement) => {
     }
 };
 
-toggleButtonState = (validationSettings, inputList, buttonElement) => {
+export const toggleButtonState = (validationSettings, inputList, buttonElement) => {
     if (hasInvalidInput(inputList)) {
         buttonElement.classList.add(validationSettings.inactiveButtonClass);
         buttonElement.setAttribute('disabled', true);
@@ -50,7 +46,7 @@ toggleButtonState = (validationSettings, inputList, buttonElement) => {
     }
 }
 
-getFormElements = (validationSettings, formElement) => {
+export const getFormElements = (validationSettings, formElement) => {
     
     const inputList = Array.from(formElement.querySelectorAll(validationSettings.inputSelector));
     const buttonElement = formElement.querySelector(validationSettings.submitButtonSelector);
@@ -58,7 +54,7 @@ getFormElements = (validationSettings, formElement) => {
     return {inputList: inputList, buttonElement: buttonElement};
 }
 
-setEventListeners = (validationSettings, formElement) => {
+const setEventListeners = (validationSettings, formElement) => {
 
     const formElements = getFormElements(validationSettings, formElement);
     toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
@@ -74,9 +70,7 @@ setEventListeners = (validationSettings, formElement) => {
         });
     });
 };
-}
 
 export const enableValidation = (validationSettings, formElement) => {
      setEventListeners(validationSettings, formElement);
 };
-

@@ -6,24 +6,31 @@ import {
     profileName,
     profileDescription,
     profileAvatar,
-    config,
+    validationSettings,
     editProfileButton,
     editAvatarButton,
     addPlaceButton,
+    addPlaceModalPlaceInput,
+    addPlaceModalLinkInput,
     editProfileModalNameInput,
     editProfileModalJobInput,
-    cardsList
-} from './utils/Constants.js';
+    editAvatarLinkInput,
+    imageModal,
+    cardsList,
+    addPlaceModal,
+    editProfileModal,
+    editAvatarModal
+} from './components/constants.js';
 
-import { Popup } from './components/Popup.js';
+import { Popup } from './components/modal.js';
 
-import  {FormValidator}  from './components/FormValidator.js';
-import { Api } from './components/Api.js';
-import { Card } from './components/Card.js';
-import { Section } from './components/Section.js';
-import { PopupWithImage } from './components/PopupWithImage.js';
-import { UserInfo } from './components/UserInfo.js';
-import { PopupWithForm } from './components/PopupWithForm';
+import { enableValidation, toggleButtonState, getFormElements } from './components/validate.js';
+/* import { addCard, createCard, createCards } from './components/card.js'; */
+/* import { getUserInfo, getInitialCards, addNewCard, setUserInfo, changeAvatar } from './components/api'; */
+import { Api } from './components/api.js';
+import { Card } from './components/card.js';
+import { Section } from './components/section.js';
+import { PopupWithImage } from './components/popupWithImage.js';
 
 export let userId = "";
 
@@ -35,42 +42,25 @@ const api = new Api({
         'Content-Type': 'application/json'
     }
 })
-const modalClassEditProfile = new Popup('.popup_type_editProfile')
-const modalClassAddPlace = new Popup('.popup_type_addPlace')
-const modalClassEditAvatar = new Popup('.popup_type_editAvatar')
 
-//ЭКЗЕМПЛЯРЫ КЛАССА FormValidator
-
-const elementsFormValidation = new FormValidator(config, formAddPlace);
-const profileFormValidation = new FormValidator(config, formEditProfile);
-const profileAvatarValidation = new FormValidator(config, formEditAvatar);
-
-// МЕТОДЫ КЛАССА FormValidator
-
-elementsFormValidation.enableValidation();
-profileFormValidation.enableValidation();
-profileAvatarValidation.enableValidation();
-
-//ЭКЗЕМПЛЯР КЛАССА UserInfo
-
-const userInfo = new UserInfo({
-    userName: profileName,
-    userDescription: profileDescription,
-    userAvatar: profileAvatar
-  });
 
 // вызываем основные методы класса Api для отображения данных на странице при первом входе
-// 
 Promise.all([api.getUserInfo(), api.getInitialCards()])
-    .then(([dataUser, cardsData]) => {
-        userId = dataUser._id;
-        userInfo.setUserInfo(dataUser)
-        userInfo.setUserAvatar(dataUser)
-        
+    .then(([userData, cardsData]) => {
+        // установим пользовательские данные
+        userId = userData._id;
+        profileName.textContent = userData.name;
+        profileDescription.textContent = userData.about;
+        updateAvatar(userData.avatar);
         // выведем считанные карточки
         cardsData.reverse();
-        /* createNewSection(cardsData).renderItems(); */
-        sectionCards.renderItems(cardsData);
+
+        createNewSection(cardsData).renderItems();
+        /*         createCards({
+                    initialCards: cardsData, 
+                    api: api,
+                    userId: userId,
+                    template: '#cardsListTemplate'}) */
 
     })
     .catch((err) => {
@@ -94,7 +84,7 @@ const createNewCard = (data) => {
 
 // по условия задачи "Экземпляр класса Section создается для каждого контейнера, в который требуется отрисовывать элементы"
 // поэтому сразу создадим функцию, которая будет это делать
-/* const createNewSection = (data) => {
+const createNewSection = (data) => {
     const sectionCards = new Section({
         items: data,
         renderer: (item) => {
@@ -104,14 +94,7 @@ const createNewCard = (data) => {
         cardsList
     );
     return sectionCards;
-} */
-const sectionCards = new Section({
-    renderer: (item) => {
-        sectionCards.addItem(createNewCard(item));
-    },
-},
-    cardsList
-);
+}
 
 // объявляем экземпляр класса PopupWithImage, чтобы активировать конструктор и подготовить все элементы дл яотображения
 const popupImage = new PopupWithImage(
@@ -119,105 +102,168 @@ const popupImage = new PopupWithImage(
     '.popup__image',
     '.popup__image-caption');
 
+
+
+
+
+
+const updateLoadingText = (process, formElement, validationSettings) => {
+
+    const formElements = getFormElements(validationSettings, formElement);
+
+    if (process) {
+        formElements.buttonElement.textContent = 'Сохранение...';
+    } else {
+        formElements.buttonElement.textContent = 'Сохранить';
+    }
+}
+
+const addPlaceFormSubmitHandler = (evt) => {
+
+    evt.preventDefault();
+
+    const placeInput = addPlaceModalPlaceInput.value;
+    const linkInput = addPlaceModalLinkInput.value;
+
+    const dataCard = { name: placeInput, link: linkInput };
+
+    updateLoadingText(true, formAddPlace, validationSettings);
+
+    // запишем данные на сервере и полученную инфу отразив с списке
+    api.addNewCard(dataCard)
+        .then((res) => {
+            // создадим карточку
+            const cardElem = createNewCard(res);
+
+            /* addCard(cardElem); */
+            createNewSection().addItem(cardElem);
+
+            // закрыть модальное окно
+            closeModal(addPlaceModal);
+
+            // очистим поля формы
+            formAddPlace.reset();
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+        .finally(() => {
+            updateLoadingText(false, formAddPlace, validationSettings);
+        })
+}
+
+const editProfileFormSubmitHandler = (evt) => {
+    evt.preventDefault();
+
+    const nameInput = editProfileModalNameInput.value;
+    const jobInput = editProfileModalJobInput.value;
+
+    const dataUser = { name: nameInput, about: jobInput };
+
+    updateLoadingText(true, formEditProfile, validationSettings);
+
+    api.setUserInfo(dataUser)
+        .then((res) => {
+            // обновим данные профиля
+            profileName.textContent = res.name;
+            profileDescription.textContent = res.about;
+
+            closeModal(editProfileModal);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+        .finally(() => {
+            updateLoadingText(false, formEditProfile, validationSettings);
+        })
+}
+
+function editAvatarFormSubmitHandler(evt) {
+    evt.preventDefault();
+
+    const datLink = { avatar: editAvatarLinkInput.value };
+
+    updateLoadingText(true, formEditAvatar, validationSettings);
+
+    api.changeAvatar(datLink)
+        .then((res) => {
+            updateAvatar(res.avatar);
+            formEditAvatar.reset();
+            closeModal(editAvatarModal);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+        .finally(() => {
+            updateLoadingText(false, formEditAvatar, validationSettings);
+        })
+}
+
 const openAddPlaceModal = () => {
-    modalClassAddPlace.openModal()
+    new Popup('.popup_type_addPlace').openModal()
+
     // определение состояния кнопки на форме после открытия
-    elementsFormValidation.cleanInputErrorValidation()
+    const formElements = getFormElements(validationSettings, formAddPlace);
+    toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
 }
 
 const openProfileModal = () => {
 
-    const userInformation = userInfo.getUserInfo();
-    editProfileModalNameInput.value = userInformation.userName;
-    editProfileModalJobInput.value = userInformation.userDescription;
-
-    modalClassEditProfile.openModal()
+    editProfileModalNameInput.value = profileName.textContent;
+    editProfileModalJobInput.value = profileDescription.textContent;
+    new Popup('.popup_type_editProfile').openModal()
 
     // определение состояния кнопки на форме после открытия
-    profileFormValidation.cleanInputErrorValidation();
+    const formElements = getFormElements(validationSettings, formEditProfile);
+    toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
 }
 
 const openEditAvatarModal = () => {
-    modalClassEditAvatar.openModal()
+    new Popup('.popup_type_editAvatar').openModal()
 
     // определение состояния кнопки на форме после открытия
-    profileAvatarValidation.cleanInputErrorValidation()
+    const formElements = getFormElements(validationSettings, editAvatarModal);
+    toggleButtonState(validationSettings, formElements.inputList, formElements.buttonElement);
 }
 
-// // обработчики открытия модальных форм
+function updateAvatar(link) {
+    profileAvatar.src = link;
+}
+
+// обработчики открытия модальных форм
 editProfileButton.addEventListener('click', openProfileModal);
 addPlaceButton.addEventListener('click', openAddPlaceModal);
 editAvatarButton.addEventListener('click', openEditAvatarModal);
 
+// обработчики закрытия формы по клику мыши
+// editProfileModal.addEventListener('click', closeModalClickHandler);   /// мы в классе Popup добавляем слушатель для закрытия 
+// addPlaceModal.addEventListener('click', closeModalClickHandler);      /// поэтому эти слушатели не нужны 
+// imageModal.addEventListener('click', closeModalClickHandler);
+// editAvatarModal.addEventListener('click', closeModalClickHandler);
 
-// ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (editProfile)
+// обработчики сабмит модальных форм
+formAddPlace.addEventListener('submit', addPlaceFormSubmitHandler);
+formEditProfile.addEventListener('submit', editProfileFormSubmitHandler);
+formEditAvatar.addEventListener('submit', editAvatarFormSubmitHandler);
 
-const popupFormProfile = new PopupWithForm({
-  popupSelector: '.popup_type_editProfile',
-  handleFormSubmit: (data) => {
-    popupFormProfile.renderLoading(false);
+// вызов валидации для модальных форм
+enableValidation(validationSettings, formAddPlace);
+enableValidation(validationSettings, formEditProfile);
+enableValidation(validationSettings, formEditAvatar);
 
-    api.setUserInfo(data)
-      .then((res) => {
-        userInfo.setUserInfo(res)
-      })
-      .catch((err) => {
-      console.error(err);
-      })
-      .finally(() => {
-       popupFormProfile.renderLoading(true);
+/* Promise.all([getUserInfo(), getInitialCards()])
+    .then(([userData, cardsData]) => {
+        // установим пользовательские данные
+        userId = userData._id;
+        profileName.textContent = userData.name;
+        profileDescription.textContent = userData.about;
+        updateAvatar(userData.avatar);
+        // выведем считанные карточки
+        cardsData.reverse();
+        createCards(cardsData);
     })
-  }
-})
+    .catch((err) => {
+        console.log(err);
+    }); */
 
-// МЕТОДЫ КЛАССА PopupWithForm 
 
-popupFormProfile.setEventListeners();
-
-// ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (addPlace)
-
-const popupFormAddPlace = new PopupWithForm({
-  popupSelector: '.popup_type_addPlace',
-  handleFormSubmit: (data) => {
-    popupFormAddPlace.renderLoading(false);
-    api.addNewCard(data)
-      .then((res) => {
-        const cardElem = createNewCard(res);
-        /* createNewSection().addItem(cardElem); */
-        sectionCards.addItem(cardElem);
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        popupFormAddPlace.renderLoading(true);
-    })
-  }
-})
-
-// МЕТОДЫ КЛАССА PopupWithForm 
-
-popupFormAddPlace.setEventListeners();
-
-// ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (Avatar)
-
-const popupFormAvatar = new PopupWithForm({
-  popupSelector: '.popup_type_editAvatar',
-  handleFormSubmit: (data) => {
-    popupFormAvatar.renderLoading(false);
-    api.changeAvatar(data)
-      .then((res) => {
-        userInfo.setUserAvatar(res);
-      })
-      .catch((err) => {
-      console.error(err);
-      })
-      .finally(() => {
-      popupFormAvatar.renderLoading(true);
-    })
-  }
-})
-
-// МЕТОДЫ КЛАССА PopupWithForm (Avatar)
-
-popupFormAvatar.setEventListeners();
