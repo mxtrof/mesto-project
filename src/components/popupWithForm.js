@@ -14,9 +14,7 @@ export class PopupWithForm extends Popup {
     this._inputList.forEach(input => this._formValues[input.name] = input.value);
     return this._formValues;
   }
-  // openModal(){
-  //   super
-  // }
+  
   setEventListeners() {
     super.setEventListeners();
     this._form.addEventListener('submit', (evt) => {
@@ -32,6 +30,7 @@ export class PopupWithForm extends Popup {
       this._saveButton.textContent = 'Сохранить';
     }
   }
+  
   hendleSubmit(request, popupInstance){
     popupInstance.renderLoading(true);
     request()
