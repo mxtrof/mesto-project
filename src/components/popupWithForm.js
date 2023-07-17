@@ -14,7 +14,6 @@ export class PopupWithForm extends Popup {
     this._inputList.forEach(input => this._formValues[input.name] = input.value);
     return this._formValues;
   }
- 
   setEventListeners() {
     super.setEventListeners();
     this._form.addEventListener('submit', (evt) => {
@@ -30,7 +29,6 @@ export class PopupWithForm extends Popup {
       this._saveButton.textContent = 'Сохранить';
     }
   }
-
   closeModal() {
     super.closeModal();
     this._form.reset();

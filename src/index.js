@@ -64,7 +64,6 @@ Promise.all([api.getUserInfo(), api.getInitialCards()])
         
         // выведем считанные карточки
         cardsData.reverse();
-        /* createNewSection(cardsData).renderItems(); */
         sectionCards.renderItems(cardsData);
 
     })
@@ -87,6 +86,19 @@ const createNewCard = (data) => {
     return card.createCard();
 };
 
+// по условия задачи "Экземпляр класса Section создается для каждого контейнера, в который требуется отрисовывать элементы"
+// поэтому сразу создадим функцию, которая будет это делать
+/* const createNewSection = (data) => {
+    const sectionCards = new Section({
+        items: data,
+        renderer: (item) => {
+            sectionCards.addItem(createNewCard(item));
+        },
+    },
+        cardsList
+    );
+    return sectionCards;
+} */
 const sectionCards = new Section({
     renderer: (item) => {
         sectionCards.addItem(createNewCard(item));
@@ -128,7 +140,7 @@ const openEditAvatarModal = () => {
     profileAvatarValidation.cleanInputErrorValidation()
 }
 
-// // обработчики открытия модальных форм
+// обработчики открытия модальных форм
 editProfileButton.addEventListener('click', openProfileModal);
 addPlaceButton.addEventListener('click', openAddPlaceModal);
 editAvatarButton.addEventListener('click', openEditAvatarModal);
