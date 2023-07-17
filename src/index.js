@@ -15,8 +15,6 @@ import {
     cardsList
 } from './utils/Constants.js';
 
-import { Popup } from './components/Popup.js';
-
 import  {FormValidator}  from './components/FormValidator.js';
 import { Api } from './components/Api.js';
 import { Card } from './components/Card.js';
@@ -35,9 +33,6 @@ const api = new Api({
         'Content-Type': 'application/json'
     }
 })
-const modalClassEditProfile = new Popup('.popup_type_editProfile')
-const modalClassAddPlace = new Popup('.popup_type_addPlace')
-const modalClassEditAvatar = new Popup('.popup_type_editAvatar')
 
 //ЭКЗЕМПЛЯРЫ КЛАССА FormValidator
 
@@ -69,7 +64,6 @@ Promise.all([api.getUserInfo(), api.getInitialCards()])
         
         // выведем считанные карточки
         cardsData.reverse();
-        /* createNewSection(cardsData).renderItems(); */
         sectionCards.renderItems(cardsData);
 
     })
@@ -120,10 +114,12 @@ const popupImage = new PopupWithImage(
     '.popup__image-caption');
 
 const openAddPlaceModal = () => {
-    modalClassAddPlace.openModal()
+  popupFormAddPlace.openModal()
     // определение состояния кнопки на форме после открытия
     elementsFormValidation.cleanInputErrorValidation()
 }
+//МЕТОД КЛАССА PopupWithForm для закрытия картинок 
+popupImage.setEventListeners()
 
 const openProfileModal = () => {
 
@@ -131,67 +127,72 @@ const openProfileModal = () => {
     editProfileModalNameInput.value = userInformation.userName;
     editProfileModalJobInput.value = userInformation.userDescription;
 
-    modalClassEditProfile.openModal()
+    popupFormProfile.openModal()
 
     // определение состояния кнопки на форме после открытия
     profileFormValidation.cleanInputErrorValidation();
 }
 
 const openEditAvatarModal = () => {
-    modalClassEditAvatar.openModal()
+  popupFormAvatar.openModal()
 
     // определение состояния кнопки на форме после открытия
     profileAvatarValidation.cleanInputErrorValidation()
 }
 
-// // обработчики открытия модальных форм
+// обработчики открытия модальных форм
 editProfileButton.addEventListener('click', openProfileModal);
 addPlaceButton.addEventListener('click', openAddPlaceModal);
 editAvatarButton.addEventListener('click', openEditAvatarModal);
 
 
+const handleSubmit = (request, popupInstance)=>{
+  popupInstance.renderLoading(true);
+  request()
+    .then(() => {
+      popupInstance.closeModal()
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    })
+    .finally(() => {
+      popupInstance.renderLoading(false);
+    });   
+  
+}
+
 // ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (editProfile)
 
 const popupFormProfile = new PopupWithForm({
   popupSelector: '.popup_type_editProfile',
-  handleFormSubmit: (data) => {
-    popupFormProfile.renderLoading(false);
-
-    api.setUserInfo(data)
+  handleFormSubmit: (data) => {  
+    const getForm = () =>{
+    return api.setUserInfo(data)
       .then((res) => {
         userInfo.setUserInfo(res)
       })
-      .catch((err) => {
-      console.error(err);
-      })
-      .finally(() => {
-       popupFormProfile.renderLoading(true);
-    })
+    }
+    handleSubmit(getForm, popupFormProfile)
   }
 })
 
 // МЕТОДЫ КЛАССА PopupWithForm 
 
-popupFormProfile.setEventListeners();
+popupFormProfile.setEventListeners()
 
 // ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (addPlace)
 
 const popupFormAddPlace = new PopupWithForm({
   popupSelector: '.popup_type_addPlace',
   handleFormSubmit: (data) => {
-    popupFormAddPlace.renderLoading(false);
-    api.addNewCard(data)
+    const getForm = () =>{
+      return api.addNewCard(data)
       .then((res) => {
         const cardElem = createNewCard(res);
-        /* createNewSection().addItem(cardElem); */
         sectionCards.addItem(cardElem);
       })
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        popupFormAddPlace.renderLoading(true);
-    })
+    }
+    handleSubmit(getForm, popupFormAddPlace)
   }
 })
 
@@ -204,18 +205,14 @@ popupFormAddPlace.setEventListeners();
 const popupFormAvatar = new PopupWithForm({
   popupSelector: '.popup_type_editAvatar',
   handleFormSubmit: (data) => {
-    popupFormAvatar.renderLoading(false);
-    api.changeAvatar(data)
+    const getForm =()=>{
+    return api.changeAvatar(data)
       .then((res) => {
         userInfo.setUserAvatar(res);
       })
-      .catch((err) => {
-      console.error(err);
-      })
-      .finally(() => {
-      popupFormAvatar.renderLoading(true);
-    })
-  }
+}
+handleSubmit(getForm, popupFormAvatar)
+}
 })
 
 // МЕТОДЫ КЛАССА PopupWithForm (Avatar)
