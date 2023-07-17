@@ -33,9 +33,6 @@ const api = new Api({
         'Content-Type': 'application/json'
     }
 })
-// const modalClassEditProfile = new Popup('.popup_type_editProfile')
-// const modalClassAddPlace = new Popup('.popup_type_addPlace')
-// const modalClassEditAvatar = new Popup('.popup_type_editAvatar')
 
 //ЭКЗЕМПЛЯРЫ КЛАССА FormValidator
 
@@ -90,19 +87,6 @@ const createNewCard = (data) => {
     return card.createCard();
 };
 
-// по условия задачи "Экземпляр класса Section создается для каждого контейнера, в который требуется отрисовывать элементы"
-// поэтому сразу создадим функцию, которая будет это делать
-/* const createNewSection = (data) => {
-    const sectionCards = new Section({
-        items: data,
-        renderer: (item) => {
-            sectionCards.addItem(createNewCard(item));
-        },
-    },
-        cardsList
-    );
-    return sectionCards;
-} */
 const sectionCards = new Section({
     renderer: (item) => {
         sectionCards.addItem(createNewCard(item));
@@ -122,6 +106,8 @@ const openAddPlaceModal = () => {
     // определение состояния кнопки на форме после открытия
     elementsFormValidation.cleanInputErrorValidation()
 }
+//МЕТОД КЛАССА PopupWithForm для закрытия картинок 
+popupImage.setEventListeners()
 
 const openProfileModal = () => {
 
@@ -148,38 +134,53 @@ addPlaceButton.addEventListener('click', openAddPlaceModal);
 editAvatarButton.addEventListener('click', openEditAvatarModal);
 
 
+const handleSubmit = (request, popupInstance)=>{
+  popupInstance.renderLoading(true);
+  request()
+    .then(() => {
+      popupInstance.closeModal()
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    })
+    .finally(() => {
+      popupInstance.renderLoading(false);
+    });   
+  
+}
+
 // ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (editProfile)
 
 const popupFormProfile = new PopupWithForm({
   popupSelector: '.popup_type_editProfile',
   handleFormSubmit: (data) => {  
-    const modalForm = () =>{
+    const getForm = () =>{
     return api.setUserInfo(data)
       .then((res) => {
         userInfo.setUserInfo(res)
       })
     }
-    popupFormAvatar.hendleSubmit(modalForm, popupFormProfile)
+    handleSubmit(getForm, popupFormProfile)
   }
 })
 
 // МЕТОДЫ КЛАССА PopupWithForm 
 
-popupFormProfile.setEventListeners();
+popupFormProfile.setEventListeners()
 
 // ЭКЗЕМПЛЯРЫ КЛАССА PopupWithForm (addPlace)
 
 const popupFormAddPlace = new PopupWithForm({
   popupSelector: '.popup_type_addPlace',
   handleFormSubmit: (data) => {
-    const modalForm = () =>{
+    const getForm = () =>{
       return api.addNewCard(data)
       .then((res) => {
         const cardElem = createNewCard(res);
         sectionCards.addItem(cardElem);
       })
     }
-    popupFormAvatar.hendleSubmit(modalForm, popupFormAddPlace)
+    handleSubmit(getForm, popupFormAddPlace)
   }
 })
 
@@ -192,13 +193,13 @@ popupFormAddPlace.setEventListeners();
 const popupFormAvatar = new PopupWithForm({
   popupSelector: '.popup_type_editAvatar',
   handleFormSubmit: (data) => {
-    const modalForm =()=>{
+    const getForm =()=>{
     return api.changeAvatar(data)
       .then((res) => {
         userInfo.setUserAvatar(res);
       })
 }
-popupFormAvatar.hendleSubmit(modalForm, popupFormAvatar)
+handleSubmit(getForm, popupFormAvatar)
 }
 })
 

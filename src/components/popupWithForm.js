@@ -14,9 +14,7 @@ export class PopupWithForm extends Popup {
     this._inputList.forEach(input => this._formValues[input.name] = input.value);
     return this._formValues;
   }
-  // openModal(){
-  //   super
-  // }
+ 
   setEventListeners() {
     super.setEventListeners();
     this._form.addEventListener('submit', (evt) => {
@@ -31,20 +29,6 @@ export class PopupWithForm extends Popup {
     } else {
       this._saveButton.textContent = 'Сохранить';
     }
-  }
-  hendleSubmit(request, popupInstance){
-    popupInstance.renderLoading(true);
-    request()
-      .then(() => {
-        popupInstance.closeModal()
-      })
-      .catch((err) => {
-        console.error(`Ошибка: ${err}`);
-      })
-      .finally(() => {
-        popupInstance.renderLoading(false);
-      });   
-    
   }
 
   closeModal() {
